@@ -17,6 +17,7 @@ public class Module {
     public static class IOContainer {
 
         // Input
+        public double pivotPosition = 0.0;
 
         // Output
         public double demandedPivotPosition = 0.0;
