@@ -6,9 +6,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.fasterxml.jackson.core.io.IOContext;
 
+//TODO: Writing Periodic outputs
 public class Module {
-
-    private final int moduleID;
 
     private final TalonFX driveMotor, pivotMotor;
     private final CANcoder pivotEncoder;
