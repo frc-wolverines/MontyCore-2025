@@ -7,6 +7,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.fasterxml.jackson.core.io.IOContext;
 
 //TODO: Writing Periodic outputs
+//TODO: Telemetry/ Odometry
+//TODO: Swerve Module State Interpretation/ Handling
+//TODO: Value Unit Conversion
 public class Module {
 
     private final TalonFX driveMotor, pivotMotor;
