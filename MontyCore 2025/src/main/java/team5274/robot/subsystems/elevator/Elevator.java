@@ -16,15 +16,25 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import team5274.robot.DeviceMap;
 import team5274.robot.Constants.ElevatorConstants;
 import team5274.robot.DeviceMap.ElevatorMap;
+import team5274.lib.control.SubsystemFrame;
 
 /** Add your docs here. */
-public class Elevator {
+public class Elevator implements SubsystemFrame {
     private double heightObjective = ElevatorConstants.kMinHeight;
     private TalonFX master, slave;
 
+    public static Elevator _instance;
+
+    public static Elevator get() {
+        if(_instance == null) _instance = new Elevator();
+        return _instance;
+    }
+
     public Elevator() {
         master = new TalonFX(ElevatorMap.kMasterMotorId.getDeviceId());
+        master.getConfigurator().apply(ElevatorConstants.kMasterConfig);
 
         slave = new TalonFX(ElevatorMap.kSlaveMotorId.getDeviceId());
+        slave.getConfigurator().apply(ElevatorConstants.kSlaveConfig)
     }
 }
