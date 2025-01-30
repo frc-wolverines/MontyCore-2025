@@ -36,5 +36,26 @@ public class Elevator implements SubsystemFrame {
 
         slave = new TalonFX(ElevatorMap.kSlaveMotorId.getDeviceId());
         slave.getConfigurator().apply(ElevatorConstants.kSlaveConfig)
+    } 
+
+    @Override
+    public void sendTelemetry() {
+        Smartdashboard.putNumber("Master Position Rotations", master.getPosition().getValueAsDouble());
+        Smartdashboard.putNumber("Master Velocity Rotations", master.getVelocity().getValueAsDouble());
+
+        Smartdashboard.putNumber("Slave Position Rotations", slave.getPosition().getValueAsDouble());
+        Smartdashboard.putNumber("Slave Velocity Rotations", slave.getVelocity().getValueAsDouble());
+    }
+
+    @Override
+    public void zeroSensors() {
+        master.setPosition(0.0);
+        slave.setPosition(0.0);
+    }
+
+    @Override
+    public void stop() {
+        master.stopMotor();
+        slave.stopMotor();
     }
 }
