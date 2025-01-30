@@ -40,6 +40,11 @@ public class Constants {
         public static final double kStationHeight = 0.0; //Configure
         public static final double kHandoffHeight = 0.0; //Configure
 
+        //Motion Magic®
+        public static final double kMotionMagicAcceleration = 20;
+        public static final double kMotionMagicCruiseVelocity = 10;
+
+        //Hardware Configurations
         public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration()
             .withMotorOutput(
                 new MotorOutputConfigs()
@@ -47,11 +52,18 @@ public class Constants {
                     .withNeutralMode(NeutralModeValue.Brake))
             .withMotionMagic(
                 new MotionMagicConfigs()
-                    .withMotionMagicAcceleration(20)
-                    .withMotionMagicCruiseVelocity(10))
-            .withHardwareLimitSwitch(
-                new HardwareLimitSwitchConfigs()
-                    .withForwardLimitType(ForwardLimitTypeValue.NormallyOpen)
-                    .withForwardLimit)
+                    .withMotionMagicAcceleration(kMotionMagicAcceleration)
+                    .withMotionMagicCruiseVelocity(kMotionMagicCruiseVelocity));
+
+        public static final TalonFXConfiguration kSlaveConfig = new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicAcceleration(kMotionMagicAcceleration)
+                    .withMotionMagicCruiseVelocity(kMotionMagicCruiseVelocity));
+
     }
 }
