@@ -4,6 +4,15 @@
 
 package team5274.robot;
 
+import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.ForwardLimitSourceValue;
+import com.ctre.phoenix6.signals.ForwardLimitTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 /** Add your docs here. */
 public class Constants {
 
@@ -30,6 +39,19 @@ public class Constants {
         //Intaking
         public static final double kStationHeight = 0.0; //Configure
         public static final double kHandoffHeight = 0.0; //Configure
-    }
 
+        public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicAcceleration(20)
+                    .withMotionMagicCruiseVelocity(10))
+            .withHardwareLimitSwitch(
+                new HardwareLimitSwitchConfigs()
+                    .withForwardLimitType(ForwardLimitTypeValue.NormallyOpen)
+                    .withForwardLimit)
+    }
 }

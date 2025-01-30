@@ -4,9 +4,27 @@
 
 package team5274.robot.subsystems.elevator;
 
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import team5274.robot.DeviceMap;
+import team5274.robot.Constants.ElevatorConstants;
+import team5274.robot.DeviceMap.ElevatorMap;
+
 /** Add your docs here. */
 public class Elevator {
-    public enum Extension {
-        
+    private double heightObjective = ElevatorConstants.kMinHeight;
+    private TalonFX master, slave;
+
+    public Elevator() {
+        master = new TalonFX(ElevatorMap.kMasterMotorId.getDeviceId());
+
+        slave = new TalonFX(ElevatorMap.kSlaveMotorId.getDeviceId());
     }
 }
