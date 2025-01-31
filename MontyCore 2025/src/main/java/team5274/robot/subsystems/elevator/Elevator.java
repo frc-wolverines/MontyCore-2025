@@ -1,26 +1,21 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package team5274.robot.subsystems.elevator;
 
-import com.ctre.phoenix6.controls.ControlRequest;
+import java.util.function.Supplier;
+
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import team5274.robot.DeviceMap;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team5274.robot.Constants.ElevatorConstants;
 import team5274.robot.DeviceMap.ElevatorMap;
 import team5274.lib.control.SubsystemFrame;
 
 /** Add your docs here. */
-public class Elevator implements SubsystemFrame {
-    public enum ControlState {
-        DUTY_CYCLE,
-        OBJECTIVE
-    }
-
-    private ControlState controlState = ControlState.OBJECTIVE;
+public class Elevator extends SubsystemBase implements SubsystemFrame {
     private double heightObjective = ElevatorConstants.kMinHeight;
     private TalonFX master, slave;
 
@@ -37,13 +32,19 @@ public class Elevator implements SubsystemFrame {
 
         slave = new TalonFX(ElevatorMap.kSlaveMotorId.getDeviceId());
         slave.getConfigurator().apply(ElevatorConstants.kSlaveConfig);
+        slave.setControl(new Follower(master.getDeviceID(), true));
     }
 
-    public void writeDutyCycleOutput(double power) {
-        if(controlState != ControlState.DUTY_CYCLE) controlState = ControlState.DUTY_CYCLE;
-        master.set(power);
-        slave.setControl(new Follower(master.getDeviceID(), true));
-    } 
+    public void dutyCycleCommand(double input) {
+        startEnd(
+            () -> {
+                master.setControl(new DutyCycleOut(input));
+            },
+            () -> {
+                master.setControl(new DutyCycleOut(0.0));
+            }
+        ).withName("Elevator duty cycle");;
+    }
 
     @Override
     public void sendTelemetry() {
