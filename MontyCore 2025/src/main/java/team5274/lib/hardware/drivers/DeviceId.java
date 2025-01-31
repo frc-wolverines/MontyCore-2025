@@ -4,8 +4,6 @@
 
 package team5274.lib.hardware.drivers;
 
-import edu.wpi.first.wpilibj.PWM;
-
 /** A class that stores a device's id used in various busses */
 public class DeviceId {
     public static enum Bus {
