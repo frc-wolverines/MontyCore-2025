@@ -7,8 +7,9 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.AbsoluteEncoder;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,8 +19,9 @@ import team5274.robot.DeviceMap.ElevatorPivotMap;
 
 public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
     private TalonFX master, slave;
+    private DutyCycleEncoder encoder;
 
-    public static ElevatorPivot _instance;
+    private static ElevatorPivot _instance;
 
     public static ElevatorPivot get() {
         if(_instance == null) _instance = new ElevatorPivot();
@@ -33,6 +35,8 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
         slave = new TalonFX(ElevatorPivotMap.kSlaveMotorId.getDeviceId());
         slave.getConfigurator().apply(ElevatorPivotConstants.kSlaveConfig);
         slave.setControl(new Follower(master.getDeviceID(), true));
+
+        encoder = new DutyCycleEncoder(new DigitalInput(ElevatorPivotMap.kEncoderId.getDeviceId()));
         
         setDefaultCommand(dutyCycleCommand(() -> 0.0));
     }
@@ -61,14 +65,15 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
 
     @Override
     public void sendTelemetry() {
-        SmartDashboard.putNumber("Master Position Rotations", master.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("Master Velocity Rotations", master.getVelocity().getValueAsDouble());
+        SmartDashboard.putData(this);
 
-        SmartDashboard.putNumber("Slave Position Rotations", slave.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("Slave Velocity Rotations", slave.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber(this.getName() + "/Master Position Rotations", master.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber(this.getName() + "/Master Velocity Rotations", master.getVelocity().getValueAsDouble());
 
-        SmartDashboard.putNumber("Encoder Position Rotations", 0); //Configure
-        SmartDashboard.putNumber("Encoder Position Angle", 0); //Configure
+        SmartDashboard.putNumber(this.getName() + "/Slave Position Rotations", slave.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber(this.getName() + "/Slave Velocity Rotations", slave.getVelocity().getValueAsDouble());
+
+        SmartDashboard.putData(this.getName() + "/Through Bore Encoder", encoder);
     }
 
     @Override
