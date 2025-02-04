@@ -17,7 +17,7 @@ import team5274.lib.control.SubsystemFrame;
 public class Elevator extends SubsystemBase implements SubsystemFrame {
     private TalonFX master, slave;
 
-    public static Elevator _instance;
+    private static Elevator _instance;
 
     public static Elevator get() {
         if(_instance == null) _instance = new Elevator();
@@ -31,6 +31,8 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
         slave = new TalonFX(ElevatorMap.kSlaveMotorId.getDeviceId());
         slave.getConfigurator().apply(ElevatorConstants.kSlaveConfig);
         slave.setControl(new Follower(master.getDeviceID(), true));
+
+        setDefaultCommand(dutyCycleCommand(() -> 0.0));
     }
 
     public Command dutyCycleCommand(Supplier<Double> dutyCycleSupplier) {
@@ -57,11 +59,13 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
 
     @Override
     public void sendTelemetry() {
-        SmartDashboard.putNumber("Master Position Rotations", master.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("Master Velocity Rotations", master.getVelocity().getValueAsDouble());
+        SmartDashboard.putData(this);
 
-        SmartDashboard.putNumber("Slave Position Rotations", slave.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("Slave Velocity Rotations", slave.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber(this.getName() + "/Master Position Rotations", master.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber(this.getName() + "/Master Velocity Rotations", master.getVelocity().getValueAsDouble());
+
+        SmartDashboard.putNumber(this.getName() + "/Slave Position Rotations", slave.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber(this.getName() + "/Slave Velocity Rotations", slave.getVelocity().getValueAsDouble());
     }
 
     @Override
