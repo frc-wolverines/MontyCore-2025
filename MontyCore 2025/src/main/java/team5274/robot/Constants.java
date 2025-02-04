@@ -61,6 +61,47 @@ public class Constants {
                 new MotionMagicConfigs()
                     .withMotionMagicAcceleration(kMotionMagicAcceleration)
                     .withMotionMagicCruiseVelocity(kMotionMagicCruiseVelocity));
+    }
 
+    public static class ElevatorPivotConstants {
+        public static final double kGearRatio = 0.0; //Configure
+
+        //Extrema
+        public static final double kMinRotations = 0.0;
+        public static final double kMaxRotations = 0.0; //Configure
+        public static final double kMinAngle = 0.0;
+        public static final double kMaxAngle = 0.0; //Configure
+
+        //Tolerances
+        public static final double kRotationTolerance = 0.1;
+
+        //Intaking
+        public static final double kStationAngle = 0.0; //Configure
+        public static final double kHandoffAngle = 0.0; //Configure
+
+        //Motion Magic®
+        public static final double kMotionMagicAcceleration = 20;
+        public static final double kMotionMagicCruiseVelocity = 10;
+
+        //Hardware Configurations
+        public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicAcceleration(kMotionMagicAcceleration)
+                    .withMotionMagicCruiseVelocity(kMotionMagicCruiseVelocity));
+
+        public static final TalonFXConfiguration kSlaveConfig = new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicAcceleration(kMotionMagicAcceleration)
+                    .withMotionMagicCruiseVelocity(kMotionMagicCruiseVelocity));
     }
 }
