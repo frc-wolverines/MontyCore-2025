@@ -13,7 +13,11 @@ public class DeviceMap {
     public static class ElevatorPivotMap {
         public static final DeviceId kMasterMotorId = new DeviceId(0, Bus.CAN); //Configure
         public static final DeviceId kSlaveMotorId = new DeviceId(0, Bus.CAN); //Configure
-        public static final DeviceId kEncoderId = new DeviceId(0, Bus.AIN); //Configure
+        public static final DeviceId kEncoderId = new DeviceId(0, Bus.DIO); //Configure
     }
 
+    public static class ArmMap {
+        public static final DeviceId kPinionMotorId = new DeviceId(0, Bus.CAN); //Configure
+        public static final DeviceId kEncoderId = new DeviceId(1, Bus.DIO); //Configure
+    }
 }
