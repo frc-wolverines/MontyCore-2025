@@ -6,8 +6,14 @@ package team5274.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import team5274.robot.subsystems.elevator.Elevator;
+import team5274.robot.subsystems.elevator.ElevatorPivot;
 
 public class RobotContainer {
+
+  public static Elevator elevator = Elevator.get();
+  public static ElevatorPivot elevatorPivot = ElevatorPivot.get();
+
   public RobotContainer() {
     configureBindings();
   }
