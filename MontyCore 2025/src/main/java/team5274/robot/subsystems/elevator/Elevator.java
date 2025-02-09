@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team5274.robot.Constants.ElevatorConstants;
 import team5274.robot.DeviceMap.ElevatorMap;
+import team5274.robot.subsystems.Superstructure.SuperstructureGoal;
 import team5274.lib.control.SubsystemFrame;
 
 public class Elevator extends SubsystemBase implements SubsystemFrame {
@@ -32,11 +33,11 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
         slave.getConfigurator().apply(ElevatorConstants.kSlaveConfig);
         slave.setControl(new Follower(master.getDeviceID(), true));
 
-        setDefaultCommand(dutyCycleCommand(() -> 0.0));
+        setDefaultCommand(heightCommand(() -> SuperstructureGoal.IDLE.elevatorHeight));
     }
 
     public Command dutyCycleCommand(Supplier<Double> dutyCycleSupplier) {
-        return startEnd(
+        return runEnd(
             () -> {
                 master.setControl(new DutyCycleOut(dutyCycleSupplier.get()));
             },
@@ -47,7 +48,7 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
     }
 
     public Command motionMagicCommand(Supplier<Double> motionMagicPositionSupplier) {
-        return startEnd(
+        return runEnd(
             () -> {
                 master.setControl(new MotionMagicDutyCycle(motionMagicPositionSupplier.get()));
             }, 
@@ -55,6 +56,17 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
                 master.setControl(new NeutralOut());
             }
         ).withName("Elevator MotionMagic");
+    }
+
+    public Command heightCommand(Supplier<Double> heightSupplier) {
+        return runEnd(
+            () -> {
+                master.setControl(new MotionMagicDutyCycle(heightSupplier.get() * ElevatorConstants.kGearRatio));
+            }, 
+            () -> {
+                master.setControl(new NeutralOut());
+            }
+        ).withName("Elevator Height MotionMagic");
     }
 
     @Override

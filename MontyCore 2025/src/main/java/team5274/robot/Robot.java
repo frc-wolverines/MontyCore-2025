@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import team5274.robot.subsystems.Arm;
+import team5274.robot.subsystems.arm.Arm;
+import team5274.robot.subsystems.arm.Pincer;
 import team5274.robot.subsystems.elevator.Elevator;
 import team5274.robot.subsystems.elevator.ElevatorPivot;
 
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot {
     Elevator.get().sendTelemetry();
     ElevatorPivot.get().sendTelemetry();
     Arm.get().sendTelemetry();
+    Pincer.get().sendTelemetry();
   }
 
   @Override

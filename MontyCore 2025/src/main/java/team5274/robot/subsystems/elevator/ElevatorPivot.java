@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,10 +17,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team5274.lib.control.SubsystemFrame;
 import team5274.robot.Constants.ElevatorPivotConstants;
 import team5274.robot.DeviceMap.ElevatorPivotMap;
+import team5274.robot.subsystems.Superstructure.SuperstructureGoal;
 
 public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
     private TalonFX master, slave;
     private DutyCycleEncoder encoder;
+
+    private PIDController positionController;
 
     private static ElevatorPivot _instance;
 
@@ -37,30 +41,43 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
         slave.setControl(new Follower(master.getDeviceID(), true));
 
         encoder = new DutyCycleEncoder(new DigitalInput(ElevatorPivotMap.kEncoderId.getDeviceId()));
+
+        positionController = new PIDController(ElevatorPivotConstants.kP, ElevatorPivotConstants.kI, ElevatorPivotConstants.kD);
         
-        setDefaultCommand(dutyCycleCommand(() -> 0.0));
+        setDefaultCommand(angleCommand(() -> SuperstructureGoal.IDLE.elevatorAngle));
     }
 
     public Command dutyCycleCommand(Supplier<Double> dutyCycleSupplier) {
-        return startEnd(
+        return runEnd(
             () -> {
                 master.setControl(new DutyCycleOut(dutyCycleSupplier.get()));
             },
             () -> { 
-                master.setControl(new DutyCycleOut(0.0));
+                master.setControl(new NeutralOut());
             }
         ).withName("Elevator Pivot duty cycle");
     }
 
-    public Command motionMagicCommand(Supplier<Double> motionMagicPositionSupplier) {
-        return startEnd(
+    public Command pidCommand(Supplier<Double> positionSupplier) {
+        return runEnd(
             () -> {
-                master.setControl(new MotionMagicDutyCycle(motionMagicPositionSupplier.get()));
+                master.setControl(new DutyCycleOut(positionController.calculate(positionSupplier.get())));
             }, 
             () -> {
                 master.setControl(new NeutralOut());
             }
-        ).withName("Elevator Pivot MotionMagic");
+        ).withName("Elevator Pivot PID Control");
+    }
+
+    public Command angleCommand(Supplier<Double> angleSupplier) {
+        return runEnd(
+            () -> {
+                master.setControl(new DutyCycleOut(positionController.calculate(angleSupplier.get() * ElevatorPivotConstants.kGearRatio)));
+            }, 
+            () -> {
+                master.setControl(new NeutralOut());
+            }
+        ).withName("Elevator Pivot Angle Control");
     }
 
     @Override
@@ -74,6 +91,8 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
         SmartDashboard.putNumber(this.getName() + "/Slave Velocity Rotations", slave.getVelocity().getValueAsDouble());
 
         SmartDashboard.putData(this.getName() + "/Through Bore Encoder", encoder);
+
+        SmartDashboard.putData(this.getName() + "/Position PID Controller", positionController);
     }
 
     @Override

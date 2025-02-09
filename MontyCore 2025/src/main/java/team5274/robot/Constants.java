@@ -27,16 +27,6 @@ public class Constants {
         public static final double kRotationTolerance = 0.1;
         public static final double kHeightTolerance = 0.5;
 
-        //Placement
-        public static final double kTroughHeight = 0.0; //Configure
-        public static final double kL1Height = 0.0; //Configure
-        public static final double kL2Height = 0.0; //Configure
-        public static final double kL3Height = 0.0; //Configure
-
-        //Intaking
-        public static final double kStationHeight = 0.0; //Configure
-        public static final double kHandoffHeight = 0.0; //Configure
-
         //Motion Magic®
         public static final double kMotionMagicAcceleration = 20;
         public static final double kMotionMagicCruiseVelocity = 10;
@@ -75,33 +65,81 @@ public class Constants {
         //Tolerances
         public static final double kRotationTolerance = 0.1;
 
-        //Intaking
-        public static final double kStationAngle = 0.0; //Configure
-        public static final double kHandoffAngle = 0.0; //Configure
-
-        //Motion Magic®
-        public static final double kMotionMagicAcceleration = 20;
-        public static final double kMotionMagicCruiseVelocity = 10;
+        //PID
+        public static final double kP = 0.0; //Configure
+        public static final double kI = 0.0; //Configure
+        public static final double kD = 0.0; //Configure
 
         //Hardware Configurations
         public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration()
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.CounterClockwise_Positive)
-                    .withNeutralMode(NeutralModeValue.Brake))
-            .withMotionMagic(
-                new MotionMagicConfigs()
-                    .withMotionMagicAcceleration(kMotionMagicAcceleration)
-                    .withMotionMagicCruiseVelocity(kMotionMagicCruiseVelocity));
+                    .withNeutralMode(NeutralModeValue.Brake));
 
         public static final TalonFXConfiguration kSlaveConfig = new TalonFXConfiguration()
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake));
+    }
+
+    public static class ArmConstants {
+        public static final double kGearRatio = 0.0; //Configure
+
+        //Extrema
+        public static final double kMinRotations = 0.0;
+        public static final double kMaxRotations = 0.0; //Configure
+        public static final double kMinAngle = 0.0;
+        public static final double kMaxAngle = 0.0; //Configure
+
+        //Tolerances
+        public static final double kRotationTolerance = 0.1;
+
+        //PID
+        public static final double kP = 0.0; //Configure
+        public static final double kI = 0.0; //Configure
+        public static final double kD = 0.0; //Configure
+
+        //Hardware Configurations
+        public static final TalonFXConfiguration kPinionConfig = new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake));
+    }
+
+    public static class PincerConstants {
+        public static final double kWristGearRatio = 0.0; //Configure
+
+        //Extrema
+        public static final double kWristMinRotations = 0.0;
+        public static final double kWristMaxRotations = 0.0; //Configure
+        public static final double kWristMinAngle = 0.0;
+        public static final double kWristMaxAngle = 0.0; //Configure
+
+        //Tolerances
+        public static final double kWristRotationTolerance = 0.1; //Configure
+        public static final double kColorSensorPossesionProximityThreshold = 0.0; //Configure
+
+        //Motion Magic®
+        public static final double kWristMotionMagicAcceleration = 20;
+        public static final double kWristMotionMagicCruiseVelocity = 10;
+
+        //Setpoints
+        public static final double kIntakeDutyCycle = 1.0;
+        public static final double kDepositDutyCycle = -1.0;
+        public static final double kWristNeutralPosition = 0;
+        public static final double kWristVerticalCoralPosition = 0.25 * kWristGearRatio; //90 Degrees
+
+        //Hardware Configurations
+        public static final TalonFXConfiguration kWristConfig = new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
-            .withMotionMagic(
-                new MotionMagicConfigs()
-                    .withMotionMagicAcceleration(kMotionMagicAcceleration)
-                    .withMotionMagicCruiseVelocity(kMotionMagicCruiseVelocity));
+            .withMotionMagic(new MotionMagicConfigs()
+                .withMotionMagicAcceleration(kWristMotionMagicAcceleration)
+                .withMotionMagicCruiseVelocity(kWristMotionMagicCruiseVelocity));
     }
 }

@@ -6,19 +6,44 @@ package team5274.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import team5274.robot.subsystems.Superstructure;
+import team5274.robot.subsystems.Superstructure.SuperstructureGoal;
+import team5274.robot.subsystems.arm.Arm;
+import team5274.robot.subsystems.arm.Pincer;
 import team5274.robot.subsystems.elevator.Elevator;
 import team5274.robot.subsystems.elevator.ElevatorPivot;
 
 public class RobotContainer {
 
-  public static Elevator elevator = Elevator.get();
-  public static ElevatorPivot elevatorPivot = ElevatorPivot.get();
+  public final static CommandXboxController driverController = new CommandXboxController(0);
+  public final static CommandXboxController operatorController = new CommandXboxController(1);
+
+  public Elevator elevator = Elevator.get();
+  public ElevatorPivot elevatorPivot = ElevatorPivot.get();
+  public Arm arm = Arm.get();
+  public Pincer pincer = Pincer.get();
 
   public RobotContainer() {
     configureBindings();
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+
+    operatorController.a().toggleOnTrue(pincer.smartRunIntake());
+
+    operatorController.pov(0).toggleOnTrue(
+      Superstructure.poseSuperstructure(SuperstructureGoal.SCORE_L3, this).alongWith(pincer.setupCoral()));
+    operatorController.pov(90).toggleOnTrue(
+      Superstructure.poseSuperstructure(SuperstructureGoal.SCORE_L1, this).alongWith(pincer.setupCoral()));
+    operatorController.pov(180).toggleOnTrue(
+      Superstructure.poseSuperstructure(SuperstructureGoal.SCORE_TROUGH, this).alongWith(pincer.setupCoral()));
+    operatorController.pov(270).toggleOnTrue(
+      Superstructure.poseSuperstructure(SuperstructureGoal.SCORE_L2, this).alongWith(pincer.setupCoral()));
+
+    operatorController.y().toggleOnTrue(Superstructure.poseSuperstructure(SuperstructureGoal.INTAKE_STATION, this).alongWith(pincer.setupNeutral()));
+
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
