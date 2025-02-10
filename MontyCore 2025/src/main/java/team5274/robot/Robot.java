@@ -1,18 +1,8 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package team5274.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import team5274.robot.subsystems.arm.Arm;
-import team5274.robot.subsystems.arm.Pincer;
-import team5274.robot.subsystems.elevator.Elevator;
-import team5274.robot.subsystems.elevator.ElevatorPivot;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -26,14 +16,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-
-    Elevator.get().dutyCycleCommand(() -> 0.0);
-    ElevatorPivot.get().dutyCycleCommand(() -> 0.0);
-
-    Elevator.get().sendTelemetry();
-    ElevatorPivot.get().sendTelemetry();
-    Arm.get().sendTelemetry();
-    Pincer.get().sendTelemetry();
   }
 
   @Override
