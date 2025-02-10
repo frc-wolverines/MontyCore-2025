@@ -16,30 +16,24 @@ public class Superstructure {
      * </ul>
     */
     public enum SuperstructureGoal {
-        IDLE(0.0, 0.0, 0.0),
-        INTAKE_STATION(0.0, 0.0, 0.0),
-        HANG(0.0, 0.0, 0.0),
-        SCORE_TROUGH(0.0, 0.0, 0.0),
-        SCORE_L1(0.0, 0.0, 0.0),
-        SCORE_L2(0.0, 0.0, 0.0),
-        SCORE_L3(0.0, 0.0, 0.0);
+        IDLE(0.0, 0.0, 0.0, 0.0),
+        INTAKE_STATION(0.0, 0.0, 0.0, 0.0),
+        HANG(0.0, 0.0, 0.0, 0.0),
+        SCORE_TROUGH(0.0, 0.0, 0.0, 0.0),
+        SCORE_L1(0.0, 0.0, 0.0, Math.PI / 4),
+        SCORE_L2(0.0, 0.0, 0.0, Math.PI / 4),
+        SCORE_L3(0.0, 0.0, 0.0, Math.PI / 4);
 
-        public final double armAngle;
-        public final double elevatorHeight;
         public final double elevatorAngle;
+        public final double elevatorHeight;
+        public final double armAngle;
+        public final double wristAngle;
 
-        private SuperstructureGoal(double arm_angle, double elevator_height, double elevator_angle) {
-            this.armAngle = arm_angle;
-            this.elevatorHeight = elevator_height;
+        private SuperstructureGoal(double elevator_angle, double elevator_height, double arm_angle, double wrist_angle) {
             this.elevatorAngle = elevator_angle;
+            this.elevatorHeight = elevator_height;
+            this.armAngle = arm_angle;
+            this.wristAngle = wrist_angle;
         }
-    }
-
-    public static Command poseSuperstructure(SuperstructureGoal goal, RobotContainer container) {
-        return new ParallelCommandGroup(
-            container.elevatorPivot.angleCommand(() -> goal.elevatorAngle),
-            container.elevator.heightCommand(() -> goal.elevatorHeight),
-            container.arm.angleCommand(() -> goal.armAngle)
-        );
     }
 }
