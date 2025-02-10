@@ -19,31 +19,16 @@ public class RobotContainer {
   public final static CommandXboxController driverController = new CommandXboxController(0);
   public final static CommandXboxController operatorController = new CommandXboxController(1);
 
-  public Elevator elevator = Elevator.get();
+  // public Elevator elevator = Elevator.get();
   public ElevatorPivot elevatorPivot = ElevatorPivot.get();
-  public Arm arm = Arm.get();
-  public Pincer pincer = Pincer.get();
+  // public Arm arm = Arm.get();
+  // public Pincer pincer = Pincer.get();
 
   public RobotContainer() {
     configureBindings();
   }
 
-  private void configureBindings() {
-
-    operatorController.a().toggleOnTrue(pincer.smartRunIntake());
-
-    operatorController.pov(0).toggleOnTrue(
-      Superstructure.poseSuperstructure(SuperstructureGoal.SCORE_L3, this).alongWith(pincer.setupCoral()));
-    operatorController.pov(90).toggleOnTrue(
-      Superstructure.poseSuperstructure(SuperstructureGoal.SCORE_L1, this).alongWith(pincer.setupCoral()));
-    operatorController.pov(180).toggleOnTrue(
-      Superstructure.poseSuperstructure(SuperstructureGoal.SCORE_TROUGH, this).alongWith(pincer.setupCoral()));
-    operatorController.pov(270).toggleOnTrue(
-      Superstructure.poseSuperstructure(SuperstructureGoal.SCORE_L2, this).alongWith(pincer.setupCoral()));
-
-    operatorController.y().toggleOnTrue(Superstructure.poseSuperstructure(SuperstructureGoal.INTAKE_STATION, this).alongWith(pincer.setupNeutral()));
-
-  }
+  private void configureBindings() {}
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
