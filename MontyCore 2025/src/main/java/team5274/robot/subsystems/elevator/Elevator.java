@@ -1,21 +1,19 @@
 package team5274.robot.subsystems.elevator;
 
 import java.util.function.Supplier;
-
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
-import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team5274.robot.Constants.ElevatorConstants;
 import team5274.robot.DeviceMap.ElevatorMap;
-import team5274.robot.subsystems.Superstructure.SuperstructureGoal;
 import team5274.lib.control.SubsystemFrame;
 
 public class Elevator extends SubsystemBase implements SubsystemFrame {
+    private double cachedHeight = 0.0;
     private TalonFX master, slave;
 
     private static Elevator _instance;
@@ -32,41 +30,52 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
         slave = new TalonFX(ElevatorMap.kSlaveMotorId.getDeviceId());
         slave.getConfigurator().apply(ElevatorConstants.kSlaveConfig);
         slave.setControl(new Follower(master.getDeviceID(), true));
-
-        setDefaultCommand(heightCommand(() -> SuperstructureGoal.IDLE.elevatorHeight));
     }
 
+    /**
+     * Retrieves the current height of the Elevator carriage, relative to the collapsed height of the carriage
+     * @return a length in inches
+     */
+    public double getHeight() {
+        return master.getRotorPosition().getValueAsDouble() * ElevatorConstants.kHeightRotationRatio;
+    }
+
+    /**
+     * Constructs a command to control the Elevator subsystem using duty-cycle control
+     * @param dutyCycleSupplier a source of duty-cycle input
+     * @return A command which controls the Elevator based on the dutyCycleSupplier's value
+     */
     public Command dutyCycleCommand(Supplier<Double> dutyCycleSupplier) {
-        return runEnd(
-            () -> {
-                master.setControl(new DutyCycleOut(dutyCycleSupplier.get()));
-            },
-            () -> { 
-                master.setControl(new DutyCycleOut(0.0));
-            }
-        ).withName("Elevator duty cycle");
+        return run(() -> master.setControl(new DutyCycleOut(dutyCycleSupplier.get()))).withName("Elevator Duty Cycle Command");
     }
 
-    public Command motionMagicCommand(Supplier<Double> motionMagicPositionSupplier) {
-        return runEnd(
-            () -> {
-                master.setControl(new MotionMagicDutyCycle(motionMagicPositionSupplier.get()));
-            }, 
-            () -> {
-                master.setControl(new NeutralOut());
-            }
-        ).withName("Elevator MotionMagic");
+    /**
+     * Constructs a command to control the Elevator subsystems using CTRE's built-in MotionMagic protocal to ascend to a given height
+     * @param targetHeight a length in inches relative to the collapsed height of the carriage
+     * @return A terminating command which moves the Elevator to a given height
+     */
+    public Command heightCommand(double targetHeight) {
+        cachedHeight = targetHeight;
+        return run(() -> master.setControl(
+            new MotionMagicDutyCycle(targetHeight / ElevatorConstants.kHeightRotationRatio)
+        )).unless(() -> Math.abs(targetHeight - getHeight()) < ElevatorConstants.kHeightTolerance).withName("Elevator Height Command");
     }
 
-    public Command heightCommand(Supplier<Double> heightSupplier) {
-        return runEnd(
-            () -> {
-                master.setControl(new MotionMagicDutyCycle(heightSupplier.get() * ElevatorConstants.kGearRatio));
-            }, 
-            () -> {
-                master.setControl(new NeutralOut());
-            }
-        ).withName("Elevator Height MotionMagic");
+    /**
+     * Constructs a command to control the Elevator subsystems using CTRE's built-in MotionMagic protocal to ascend to a given height (Used as the default command)
+     * @param targetHeight a length in inches relative to the collapsed height of the carriage
+     * @return A non-terminating command which moves the Elevator to a given height and keep it there
+     */
+    public Command persistantHeightCommand(double targetHeight) {
+        cachedHeight = targetHeight;
+        return run(() -> master.setControl(
+            new MotionMagicDutyCycle(targetHeight / ElevatorConstants.kHeightRotationRatio)
+        )).withName("Elevator Persistant Height Command");
+    }
+
+    @Override
+    public void periodic() {
+        sendTelemetry();
     }
 
     @Override
