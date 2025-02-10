@@ -1,13 +1,9 @@
 package team5274.robot.subsystems.elevator;
 
 import java.util.function.Supplier;
-
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
-import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -15,11 +11,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team5274.lib.control.SubsystemFrame;
+import team5274.robot.RobotContainer;
+import team5274.robot.Constants.ElevatorConstants;
 import team5274.robot.Constants.ElevatorPivotConstants;
 import team5274.robot.DeviceMap.ElevatorPivotMap;
-import team5274.robot.subsystems.Superstructure.SuperstructureGoal;
 
 public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
+    private double cachedAngle = 0.0; //Cached angle to hold at
     private TalonFX master, slave;
     private DutyCycleEncoder encoder;
 
@@ -44,40 +42,54 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
 
         positionController = new PIDController(ElevatorPivotConstants.kP, ElevatorPivotConstants.kI, ElevatorPivotConstants.kD);
         
-        setDefaultCommand(angleCommand(() -> SuperstructureGoal.IDLE.elevatorAngle));
+        // setDefaultCommand(persistantAngleCommand(cachedAngle));
+        setDefaultCommand(dutyCycleCommand(RobotContainer.driverController::getLeftY));
     }
 
+    /**
+     * Retrieves the angle of the Elevator, relative to the Elevator being vertical
+     * @return an angle in radians
+     */
+    public double getAngle() {
+        return encoder.get() * 2 * Math.PI;
+    }
+
+    /**
+     * Constructs a command to control the Elevator Pivot subsystem using duty-cycle control
+     * @param dutyCycleSupplier a source of duty-cycle input
+     * @return A command which controls the Elevator Pivot based on the dutyCycleSupplier's value
+     */
     public Command dutyCycleCommand(Supplier<Double> dutyCycleSupplier) {
-        return runEnd(
-            () -> {
-                master.setControl(new DutyCycleOut(dutyCycleSupplier.get()));
-            },
-            () -> { 
-                master.setControl(new NeutralOut());
-            }
-        ).withName("Elevator Pivot duty cycle");
+        return run(() -> master.setControl(new DutyCycleOut(dutyCycleSupplier.get()))).withName("Elevator Pivot Duty Cycle Command");
     }
 
-    public Command pidCommand(Supplier<Double> positionSupplier) {
-        return runEnd(
-            () -> {
-                master.setControl(new DutyCycleOut(positionController.calculate(positionSupplier.get())));
-            }, 
-            () -> {
-                master.setControl(new NeutralOut());
-            }
-        ).withName("Elevator Pivot PID Control");
+    /**
+     * Constructs a command to control the Elevator Pivot subsystem using a PID Controller to move to a given angle
+     * @param targetAngle an angle in radians relative to the Elevator being vertical
+     * @return A terminating command which moves the Elevator to a given angle
+     */
+    public Command angleCommand(double targetAngle) {
+        cachedAngle = targetAngle;
+        return run(() -> master.setControl(new DutyCycleOut(
+            positionController.calculate(getAngle(), targetAngle)
+        ))).unless(() -> Math.abs(targetAngle - getAngle()) < ElevatorPivotConstants.kAngleTolerance).withName("Elevator Pivot Angle Command");
     }
 
-    public Command angleCommand(Supplier<Double> angleSupplier) {
-        return runEnd(
-            () -> {
-                master.setControl(new DutyCycleOut(positionController.calculate(angleSupplier.get() * ElevatorPivotConstants.kGearRatio)));
-            }, 
-            () -> {
-                master.setControl(new NeutralOut());
-            }
-        ).withName("Elevator Pivot Angle Control");
+    /**
+     * Constructs a command to control the Elevator Pivot subsystem using a PID Controller to move to a given angle (Used as the default command)
+     * @param targetAngle an angle in radians relative to the Elevator being vertical
+     * @return A non-terminating command which moves the Elevator to a given angle and keeps it there
+     */
+    public Command persistantAngleCommand(double targetAngle) {
+        cachedAngle = targetAngle;
+        return run(() -> master.setControl(new DutyCycleOut(
+            positionController.calculate(getAngle(), targetAngle)
+        ))).withName("Elevator Pivot Persistant Angle Command");
+    }
+
+    @Override
+    public void periodic() {
+        sendTelemetry();
     }
 
     @Override
