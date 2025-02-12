@@ -11,6 +11,7 @@ import team5274.robot.subsystems.Superstructure;
 import team5274.robot.subsystems.Superstructure.SuperstructureGoal;
 import team5274.robot.subsystems.arm.Arm;
 import team5274.robot.subsystems.arm.Pincer;
+import team5274.robot.subsystems.drive.Drive;
 import team5274.robot.subsystems.elevator.Elevator;
 import team5274.robot.subsystems.elevator.ElevatorPivot;
 
@@ -21,6 +22,7 @@ public class RobotContainer {
 
   // public Elevator elevator = Elevator.get();
   public ElevatorPivot elevatorPivot = ElevatorPivot.get();
+  public Drive drive = Drive.get();
   // public Arm arm = Arm.get();
   // public Pincer pincer = Pincer.get();
 
