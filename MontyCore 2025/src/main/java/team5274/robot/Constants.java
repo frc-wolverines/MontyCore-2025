@@ -40,6 +40,12 @@ public class Constants {
 
         public static final double kTrackCircumference = Units.inchesToMeters(4) * Math.PI;
 
+        public static final double kDriveMaxAcceleration = 1.0; //Configure
+        public static final double kDriveMaxAngularAcceleration = 0.5; //Configure
+
+        public static final double kDriveMaxAllowedSpeed = 1.0; //Configure
+        public static final double kDriveMaxAllowedAngularSpeed = 0.5; //Configure
+
         public static final TalonFXConfiguration kDriveMotorConfig = new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs()
                 .withInverted(InvertedValue.CounterClockwise_Positive)
