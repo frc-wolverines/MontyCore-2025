@@ -17,7 +17,7 @@ import team5274.robot.subsystems.elevator.ElevatorPivot;
 public class RobotContainer {
 
   public final static CommandXboxController driverController = new CommandXboxController(0);
-  public final static CommandXboxController operatorController = new CommandXboxController(1);
+  // public final static CommandXboxController operatorController = new CommandXboxController(1);
 
   // public Elevator elevator = Elevator.get();
   public ElevatorPivot elevatorPivot = ElevatorPivot.get();
