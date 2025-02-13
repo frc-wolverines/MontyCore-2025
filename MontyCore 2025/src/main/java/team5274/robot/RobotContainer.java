@@ -22,7 +22,7 @@ public class RobotContainer {
 
   // public Elevator elevator = Elevator.get();
   public ElevatorPivot elevatorPivot = ElevatorPivot.get();
-  public Drive drive = Drive.get();
+  // public Drive drive = Drive.get();
   // public Arm arm = Arm.get();
   // public Pincer pincer = Pincer.get();
 
@@ -30,7 +30,11 @@ public class RobotContainer {
     configureBindings();
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+
+    // driverController.a().toggleOnTrue(elevatorPivot.angleCommand());
+
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

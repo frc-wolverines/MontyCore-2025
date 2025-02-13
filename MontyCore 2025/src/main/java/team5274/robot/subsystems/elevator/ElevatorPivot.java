@@ -41,9 +41,10 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
         encoder = new DutyCycleEncoder(new DigitalInput(ElevatorPivotMap.kEncoderId.getDeviceId()));
 
         positionController = new PIDController(ElevatorPivotConstants.kP, ElevatorPivotConstants.kI, ElevatorPivotConstants.kD);
+        positionController.enableContinuousInput(-Math.PI, Math.PI);
         
         // setDefaultCommand(persistantAngleCommand(cachedAngle));
-        setDefaultCommand(dutyCycleCommand(RobotContainer.driverController::getLeftY));
+        setDefaultCommand(persistantAngleCommand(cachedAngle));
     }
 
     /**
@@ -103,6 +104,7 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
         SmartDashboard.putNumber(this.getName() + "/Slave Velocity Rotations", slave.getVelocity().getValueAsDouble());
 
         SmartDashboard.putData(this.getName() + "/Through Bore Encoder", encoder);
+        SmartDashboard.putNumber(this.getName() + "/Through Bore Encoder/Reported Angle", getAngle());
 
         SmartDashboard.putData(this.getName() + "/Position PID Controller", positionController);
     }

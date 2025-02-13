@@ -118,7 +118,7 @@ public class Constants {
         public static final double kAngleTolerance = 0.05;
 
         //PID
-        public static final double kP = 0.0; //Configure
+        public static final double kP = 1.0; //Configure
         public static final double kI = 0.0; //Configure
         public static final double kD = 0.0; //Configure
 
@@ -126,13 +126,13 @@ public class Constants {
         public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration()
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake));
 
         public static final TalonFXConfiguration kSlaveConfig = new TalonFXConfiguration()
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake));
     }
 
