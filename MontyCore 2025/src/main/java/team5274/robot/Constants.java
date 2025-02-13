@@ -4,14 +4,65 @@
 
 package team5274.robot;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CustomParamsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.util.Units;
+import team5274.robot.subsystems.drive.SwerveModule.SwerveModuleConfiguration;
+
 /** Add your docs here. */
 public class Constants {
+
+    public static class DriveConstants {
+
+        public static final double kWheelDistance = Units.inchesToMeters(23.75);
+
+        public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+            new Translation2d(kWheelDistance / 2, kWheelDistance / 2),
+            new Translation2d(kWheelDistance / 2, -kWheelDistance / 2),
+            new Translation2d(-kWheelDistance / 2, kWheelDistance / 2),
+            new Translation2d(-kWheelDistance / 2, -kWheelDistance / 2)
+        );
+
+        public static final double kPivotP = 0.0;
+        public static final double kPivotI = 0.0;
+        public static final double kPivotD = 0.0;
+
+        public static final double kPivotGearRatio = 1 / 18.75; //Configure
+        public static final double kDriveGearRatio = 1 / 5.36; //Configure
+
+        public static final double kTrackCircumference = Units.inchesToMeters(4) * Math.PI;
+
+        public static final TalonFXConfiguration kDriveMotorConfig = new TalonFXConfiguration()
+            .withMotorOutput(new MotorOutputConfigs()
+                .withInverted(InvertedValue.CounterClockwise_Positive)
+                .withNeutralMode(NeutralModeValue.Brake));
+
+        public static final TalonFXConfiguration kDriveInvertedMotorConfig = new TalonFXConfiguration()
+            .withMotorOutput(new MotorOutputConfigs()
+                .withInverted(InvertedValue.Clockwise_Positive)
+                .withNeutralMode(NeutralModeValue.Brake));
+
+        public static final TalonFXConfiguration kPivotMotorConfig = new TalonFXConfiguration()
+            .withMotorOutput(new MotorOutputConfigs()
+                .withInverted(InvertedValue.CounterClockwise_Positive)
+                .withNeutralMode(NeutralModeValue.Brake));
+
+        //LF, RF, LB, RB
+        public static final SwerveModuleConfiguration[] kModuleConfigs = {
+            new SwerveModuleConfiguration(kDriveInvertedMotorConfig, kPivotMotorConfig),
+            new SwerveModuleConfiguration(kDriveMotorConfig, kPivotMotorConfig),
+            new SwerveModuleConfiguration(kDriveInvertedMotorConfig, kPivotMotorConfig),
+            new SwerveModuleConfiguration(kDriveMotorConfig, kPivotMotorConfig)
+        };
+    }
 
     public static class ElevatorConstants {
         public static final double kGearRatio = 0.0; //Configure

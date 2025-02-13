@@ -55,7 +55,7 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
      * @return A terminating command which moves the Elevator to a given height
      */
     public Command heightCommand(double targetHeight) {
-        cachedHeight = targetHeight;
+        cachedHeight =  targetHeight;
         return run(() -> master.setControl(
             new MotionMagicDutyCycle(targetHeight / ElevatorConstants.kHeightRotationRatio)
         )).unless(() -> Math.abs(targetHeight - getHeight()) < ElevatorConstants.kHeightTolerance).withName("Elevator Height Command");
