@@ -10,9 +10,10 @@ public class Superstructure {
      * A enum representation of the robot's goal. An instance of this can be used by multiple mechanisms for position data.
      * <p> A SuperstructureGoal stores: </p>
      * <ul>
-     * <li> Arm angle (in degrees relative to the minimum position of the arm, a positive angle is rotated so that the claw is facing upwards) </li>
-     * <li> Elevator height (in inches relative to the collapsed starting position of the carriage) </li>
      * <li> Elevator angle (in degrees relative to the verticality of the pivot, a positive angle is leaning closer to the front of the robot) </li>
+     * <li> Elevator height (in inches relative to the collapsed starting position of the carriage) </li>
+     * <li> Arm angle (in degrees relative to the maximum position of the arm, a positive angle is rotated so that the claw is facing downwards) </li>
+     * <li> Wrist angle (in degrees relative to the end-affector being horizontal) </li>
      * </ul>
     */
     public enum SuperstructureGoal {
