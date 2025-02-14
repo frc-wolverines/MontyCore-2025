@@ -165,14 +165,16 @@ public class Constants {
         public static final double kArmAngleTolerance = 0.05; //Configure
         public static final double kWristAngleTolerance = 0.05; //Configure
 
-        //Motion Magic®
-        public static final double kWristMotionMagicAcceleration = 20; //Configure
-        public static final double kWristMotionMagicCruiseVelocity = 10; //Configure
-
         //PID
-        public static final double kP = 0.0; //Configure
-        public static final double kI = 0.0; //Configure
-        public static final double kD = 0.0; //Configure
+        public static final double kArmP = 0.0; //Configure
+        public static final double kArmI = 0.0; //Configure
+        public static final double kArmD = 0.0; //Configure
+
+
+        public static final double kWristP = 0.0; //Configure
+        public static final double kWristI = 0.0; //Configure
+        public static final double kWristD = 0.0; //Configure
+
 
         //Hardware Configurations
         public static final TalonFXConfiguration kPinionConfig = new TalonFXConfiguration()
@@ -186,9 +188,6 @@ public class Constants {
             new MotorOutputConfigs()
                 .withInverted(InvertedValue.CounterClockwise_Positive)
                 .withNeutralMode(NeutralModeValue.Brake))
-        .withMotionMagic(new MotionMagicConfigs()
-            .withMotionMagicAcceleration(kWristMotionMagicAcceleration)
-            .withMotionMagicCruiseVelocity(kWristMotionMagicCruiseVelocity));
     }
 
     public static class PincerConstants {
