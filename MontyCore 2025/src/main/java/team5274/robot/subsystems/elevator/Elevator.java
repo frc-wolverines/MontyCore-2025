@@ -5,9 +5,13 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import team5274.robot.RobotContainer;
+import team5274.robot.Constants.DriveConstants;
 import team5274.robot.Constants.ElevatorConstants;
 import team5274.robot.DeviceMap.ElevatorMap;
 import team5274.lib.control.SubsystemFrame;
@@ -15,6 +19,8 @@ import team5274.lib.control.SubsystemFrame;
 public class Elevator extends SubsystemBase implements SubsystemFrame {
     private double cachedHeight = 0.0;
     private TalonFX master, slave;
+
+    private PIDController controller;
 
     private static Elevator _instance;
 
@@ -30,6 +36,12 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
         slave = new TalonFX(ElevatorMap.kSlaveMotorId.getDeviceId());
         slave.getConfigurator().apply(ElevatorConstants.kSlaveConfig);
         slave.setControl(new Follower(master.getDeviceID(), true));
+
+        controller = new PIDController(ElevatorConstants.kP, ElevatorConstants.kI, ElevatorConstants.kD);
+
+        // setDefaultCommand(dutyCycleCommand(() -> -RobotContainer.driverController.getLeftY()));
+        // setDefaultCommand(dutyCycleCommand(() -> -RobotContainer.driverController.getLeftY()));
+        zeroSensors();
     }
 
     /**
@@ -56,9 +68,9 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
      */
     public Command heightCommand(double targetHeight) {
         cachedHeight =  targetHeight;
-        return run(() -> master.setControl(
-            new MotionMagicDutyCycle(targetHeight / ElevatorConstants.kHeightRotationRatio)
-        )).unless(() -> Math.abs(targetHeight - getHeight()) < ElevatorConstants.kHeightTolerance).withName("Elevator Height Command");
+        return run(() -> master.setControl(new DutyCycleOut(
+            controller.calculate(getHeight(), targetHeight)
+        ))).unless(() -> Math.abs(targetHeight - getHeight()) < ElevatorConstants.kHeightTolerance).withName("Elevator Height Command");
     }
 
     /**
@@ -68,9 +80,9 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
      */
     public Command persistantHeightCommand(double targetHeight) {
         cachedHeight = targetHeight;
-        return run(() -> master.setControl(
-            new MotionMagicDutyCycle(targetHeight / ElevatorConstants.kHeightRotationRatio)
-        )).withName("Elevator Persistant Height Command");
+        return run(() -> master.setControl(new DutyCycleOut(
+            controller.calculate(getHeight(), targetHeight)
+        ))).withName("Elevator Persistant Height Command");
     }
 
     @Override
@@ -87,6 +99,8 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
 
         SmartDashboard.putNumber(this.getName() + "/Slave Position Rotations", slave.getPosition().getValueAsDouble());
         SmartDashboard.putNumber(this.getName() + "/Slave Velocity Rotations", slave.getVelocity().getValueAsDouble());
+
+        SmartDashboard.putNumber(getName() + "Height", getHeight());
     }
 
     @Override

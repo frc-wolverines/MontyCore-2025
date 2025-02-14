@@ -44,7 +44,6 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
         positionController.enableContinuousInput(-Math.PI, Math.PI);
         
         // setDefaultCommand(persistantAngleCommand(cachedAngle));
-        setDefaultCommand(persistantAngleCommand(cachedAngle));
     }
 
     /**

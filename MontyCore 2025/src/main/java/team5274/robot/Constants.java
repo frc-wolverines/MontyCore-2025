@@ -25,13 +25,13 @@ public class Constants {
         public static final double kWheelDistance = Units.inchesToMeters(23.75);
 
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(kWheelDistance / 2, kWheelDistance / 2),
             new Translation2d(kWheelDistance / 2, -kWheelDistance / 2),
-            new Translation2d(-kWheelDistance / 2, kWheelDistance / 2),
-            new Translation2d(-kWheelDistance / 2, -kWheelDistance / 2)
+            new Translation2d(kWheelDistance / 2, kWheelDistance / 2),
+            new Translation2d(-kWheelDistance / 2, -kWheelDistance / 2),
+            new Translation2d(-kWheelDistance / 2, kWheelDistance / 2)
         );
 
-        public static final double kPivotP = 0.0;
+        public static final double kPivotP = 0.8;
         public static final double kPivotI = 0.0;
         public static final double kPivotD = 0.0;
 
@@ -40,11 +40,11 @@ public class Constants {
 
         public static final double kTrackCircumference = Units.inchesToMeters(4) * Math.PI;
 
-        public static final double kDriveMaxAcceleration = 1.0; //Configure
-        public static final double kDriveMaxAngularAcceleration = 0.5; //Configure
+        public static final double kDriveMaxAcceleration = 3.0; //Configure
+        public static final double kDriveMaxAngularAcceleration = 3.0; //Configure
 
         public static final double kDriveMaxAllowedSpeed = 1.0; //Configure
-        public static final double kDriveMaxAllowedAngularSpeed = 0.5; //Configure
+        public static final double kDriveMaxAllowedAngularSpeed = 1.0; //Configure
 
         public static final TalonFXConfiguration kDriveMotorConfig = new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs()
@@ -59,7 +59,7 @@ public class Constants {
         public static final TalonFXConfiguration kPivotMotorConfig = new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs()
                 .withInverted(InvertedValue.CounterClockwise_Positive)
-                .withNeutralMode(NeutralModeValue.Brake));
+                .withNeutralMode(NeutralModeValue.Coast));
 
         //LF, RF, LB, RB
         public static final SwerveModuleConfiguration[] kModuleConfigs = {
@@ -71,8 +71,8 @@ public class Constants {
     }
 
     public static class ElevatorConstants {
-        public static final double kGearRatio = 0.0; //Configure
-        public static final double kHeightRotationRatio = 0.0; //Configure
+        public static final double kGearRatio = 1 / 25.0; //Configure
+        public static final double kHeightRotationRatio = 1 / 25.0; //Configure
 
         //Extrema
         public static final double kMinRotations = 0.0;
@@ -83,11 +83,15 @@ public class Constants {
 
         //Tolerances
         public static final double kRotationTolerance = 0.1;
-        public static final double kHeightTolerance = 0.5;
+        public static final double kHeightTolerance = 0.01;
 
         //Motion Magic®
-        public static final double kMotionMagicAcceleration = 20;
-        public static final double kMotionMagicCruiseVelocity = 10;
+        public static final double kMotionMagicAcceleration = 200;
+        public static final double kMotionMagicCruiseVelocity = 100;
+
+        public static final double kP = 0.5;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
 
         //Hardware Configurations
         public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration()
@@ -121,10 +125,10 @@ public class Constants {
         public static final double kMaxAngle = 0.0; //Configure
 
         //Tolerances
-        public static final double kAngleTolerance = 0.05;
+        public static final double kAngleTolerance = 0.1;
 
         //PID
-        public static final double kP = 1.0; //Configure
+        public static final double kP = 3.0; //Configure
         public static final double kI = 0.0; //Configure
         public static final double kD = 0.0; //Configure
 

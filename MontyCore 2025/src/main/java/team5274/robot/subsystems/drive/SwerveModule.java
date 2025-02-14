@@ -38,7 +38,7 @@ public class SwerveModule {
         encoder = new CANcoder(map.encoderId.getDeviceId());
 
         controller = new PIDController(DriveConstants.kPivotP, DriveConstants.kPivotI, DriveConstants.kPivotD);
-        controller.enableContinuousInput(-1, 1);
+        controller.enableContinuousInput(-0.5, 0.5);
     }
 
     /**
@@ -141,7 +141,8 @@ public class SwerveModule {
 
     /**Zeros the pivot encoder's position to the current absolute encoders position */
     public void zeroPivotPosition() {
-        pivotMotor.setPosition(getAbsPivotPosition());
+        pivotMotor.setPosition(getAbsPivotPosition() / DriveConstants.kPivotGearRatio);
+        System.out.println(getAbsPivotPosition() + " : " + pivotMotor.getPosition().getValueAsDouble());
     }
 
     /**A class to store TalonFXConfigurations for the swerve module */

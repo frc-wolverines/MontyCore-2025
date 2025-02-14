@@ -2,6 +2,7 @@ package team5274.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import team5274.robot.RobotContainer;
 
 public class Superstructure {
@@ -21,7 +22,7 @@ public class Superstructure {
         INTAKE_STATION(0.0, 0.0, 0.0, 0.0),
         HANG(0.0, 0.0, 0.0, 0.0),
         SCORE_TROUGH(0.0, 0.0, 0.0, 0.0),
-        SCORE_L1(0.0, 0.0, 0.0, Math.PI / 4),
+        SCORE_L1(0.36, 4.0, 0.0, Math.PI / 4),
         SCORE_L2(0.0, 0.0, 0.0, Math.PI / 4),
         SCORE_L3(0.0, 0.0, 0.0, Math.PI / 4);
 
@@ -36,5 +37,12 @@ public class Superstructure {
             this.armAngle = arm_angle;
             this.wristAngle = wrist_angle;
         }
+    }
+
+    public static Command pose(RobotContainer container, SuperstructureGoal goal) {
+        return new ParallelCommandGroup(
+            container.elevatorPivot.angleCommand(goal.elevatorAngle),
+            container.elevator.heightCommand(goal.elevatorHeight)
+        );
     }
 }

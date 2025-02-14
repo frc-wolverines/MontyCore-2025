@@ -1,11 +1,14 @@
 package team5274.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -17,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team5274.lib.control.SubsystemFrame;
+import team5274.robot.RobotContainer;
 import team5274.robot.Constants.DriveConstants;
 
 public class Drive extends SubsystemBase implements SubsystemFrame {
@@ -53,6 +57,20 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
         xInputLimiter = new SlewRateLimiter(DriveConstants.kDriveMaxAcceleration);
         yInputLimiter = new SlewRateLimiter(DriveConstants.kDriveMaxAcceleration);
         rInputLimiter = new SlewRateLimiter(DriveConstants.kDriveMaxAngularAcceleration);
+
+        setDefaultCommand(fieldAxisControlCommand(
+            () -> -RobotContainer.driverController.getLeftY(), 
+            RobotContainer.driverController::getLeftX, 
+            RobotContainer.driverController::getRightX
+        ));
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                resetHeading();
+                zeroSensors();
+            } catch (InterruptedException e) {}
+        });
     }
 
     @Override
@@ -72,9 +90,9 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
     public Command axisControlCommand(Supplier<Double> xAxisSupplier, Supplier<Double> yAxisSupplier, Supplier<Double> rAxisSupplier) {
         return run(() -> {
             ChassisSpeeds speeds = new ChassisSpeeds(
-                xInputLimiter.calculate(xAxisSupplier.get()),
-                yInputLimiter.calculate(yAxisSupplier.get()),
-                rInputLimiter.calculate(rAxisSupplier.get())
+                -xInputLimiter.calculate(xAxisSupplier.get() * DriveConstants.kDriveMaxAllowedSpeed),
+                -yInputLimiter.calculate(yAxisSupplier.get() * DriveConstants.kDriveMaxAllowedSpeed),
+                -rInputLimiter.calculate(rAxisSupplier.get() * DriveConstants.kDriveMaxAllowedAngularSpeed)
             );
 
             setSpeeds(speeds);
@@ -91,9 +109,9 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
     public Command fieldAxisControlCommand(Supplier<Double> xAxisSupplier, Supplier<Double> yAxisSupplier, Supplier<Double> rAxisSupplier) {
         return run(() -> {
             ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                xInputLimiter.calculate(xAxisSupplier.get()),
-                yInputLimiter.calculate(yAxisSupplier.get()),
-                rInputLimiter.calculate(rAxisSupplier.get()),
+                -yInputLimiter.calculate(xAxisSupplier.get() * DriveConstants.kDriveMaxAllowedSpeed),
+                -xInputLimiter.calculate(yAxisSupplier.get() * DriveConstants.kDriveMaxAllowedSpeed),
+                -rInputLimiter.calculate(rAxisSupplier.get() * DriveConstants.kDriveMaxAllowedAngularSpeed),
                 getRotation2d()
             );
 
@@ -156,7 +174,7 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
      * @return the robot's Rotation2d
      */
     public Rotation2d getRotation2d() {
-        return gyroscope.getRotation2d();
+        return Rotation2d.fromDegrees(getHeading());
     }
 
     /**
@@ -177,7 +195,7 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
     @Override
     public void sendTelemetry() {
         SmartDashboard.putData(this);
-        SmartDashboard.putNumber(getName() + "/Gyroscope", gyroscope);
+        SmartDashboard.putData(getName() + "/Gyroscope", gyroscope);
 
         modules.forEach((module) -> {
             SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Absolute Position", module.getAbsPivotPosition());
@@ -189,7 +207,12 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
 
     @Override
     public void zeroSensors() {
-        modules.forEach((module) -> {module.resetEncoders(); module.zeroPivotPosition();});
+        modules.forEach((module) -> {module.zeroPivotPosition();});
+        System.out.println("heheheh, zeroed");
+    }
+
+    public Command zero() {
+        return runOnce(() -> {zeroSensors();});
     }
 
     @Override
@@ -199,6 +222,12 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
     
     public void resetHeading() {
         gyroscope.reset();
+    }
+
+    public Command reset() {
+        return runOnce(() -> {
+            resetHeading();
+        });
     }
     
     public void resetPose2d(Pose2d pose) {
