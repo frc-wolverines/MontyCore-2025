@@ -21,7 +21,8 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
     private TalonFX pinionMotor, wristMotor;
     DutyCycleEncoder encoder;
 
-    private PIDController positionController;
+    private PIDController armPositionController;
+    private PIDController wristPositionController;
 
     private static Arm _instance;
 
@@ -39,7 +40,11 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
 
         encoder = new DutyCycleEncoder(new DigitalInput(ArmMap.kEncoderId.getDeviceId()));
 
-        positionController = new PIDController(ArmConstants.kP, ArmConstants.kI, ArmConstants.kD);
+        armPositionController = new PIDController(ArmConstants.kArmP, ArmConstants.kArmI, ArmConstants.kArmD);
+        armPositionController.enableContinuousInput(-Math.PI, Math.PI);
+
+        wristPositionController = new PIDController(ArmConstants.kWristP, ArmConstants.kWristI, ArmConstants.kWristD);
+        wristPositionController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     /**
@@ -55,7 +60,7 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
      * @return an angle in radians
      */
     public double getWristAngle() {
-        return wristMotor.getRotorPosition().getValueAsDouble() * 2 * Math.PI;
+        return wristMotor.getRotorPosition().getValueAsDouble() * ArmConstants.kWristGearRatio * 2 * Math.PI;
     }
 
     /**
@@ -80,8 +85,8 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
         cachedArmAngle = targetArmAngle;
 
         return run(() -> {
-            pinionMotor.setControl(new DutyCycleOut(positionController.calculate(getArmAngle(), targetArmAngle)));
-            wristMotor.setControl(new MotionMagicDutyCycle(cachedWristAngle / ArmConstants.kWristGearRatio));
+            pinionMotor.setControl(new DutyCycleOut(armPositionController.calculate(getArmAngle(), targetArmAngle)));
+            wristMotor.setControl(new DutyCycleOut(wristPositionController.calculate(getWristAngle(), cachedWristAngle)));
         }).unless(
             () -> Math.abs(targetArmAngle - getArmAngle()) < ArmConstants.kArmAngleTolerance && Math.abs(cachedWristAngle - getWristAngle()) < ArmConstants.kWristAngleTolerance
         ).withName("Arm Angle Command");
@@ -96,8 +101,8 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
         cachedWristAngle = targetWristAngle;
 
         return run(() -> {
-            pinionMotor.setControl(new DutyCycleOut(positionController.calculate(getArmAngle(), cachedArmAngle)));
-            wristMotor.setControl(new MotionMagicDutyCycle(cachedWristAngle / ArmConstants.kWristGearRatio));
+            pinionMotor.setControl(new DutyCycleOut(armPositionController.calculate(getArmAngle(), cachedArmAngle)));
+            wristMotor.setControl(new DutyCycleOut(wristPositionController.calculate(getWristAngle(), targetWristAngle)));
         }).unless(
             () -> Math.abs(cachedWristAngle - getWristAngle()) < ArmConstants.kWristAngleTolerance
         ).withName("Arm Orient Wrist Command");
@@ -114,8 +119,8 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
         cachedWristAngle = targetWristAngle;
 
         return run(() -> {
-            pinionMotor.setControl(new DutyCycleOut(positionController.calculate(getArmAngle(), targetArmAngle)));
-            wristMotor.setControl(new MotionMagicDutyCycle(targetWristAngle / ArmConstants.kWristGearRatio));
+            pinionMotor.setControl(new DutyCycleOut(armPositionController.calculate(getArmAngle(), targetArmAngle)));   `
+            wristMotor.setControl(new DutyCycleOut(wristPositionController.calculate(getWristAngle(), targetWristAngle)));
         }).unless(
             () -> Math.abs(targetArmAngle - getArmAngle()) < ArmConstants.kArmAngleTolerance && Math.abs(targetWristAngle - getWristAngle()) < ArmConstants.kWristAngleTolerance
         ).withName("Arm Angle Command");
@@ -132,8 +137,8 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
         cachedWristAngle = targetWristAngle;
 
         return run(() -> {
-            pinionMotor.setControl(new DutyCycleOut(positionController.calculate(getArmAngle(), targetArmAngle)));
-            wristMotor.setControl(new MotionMagicDutyCycle(targetWristAngle / ArmConstants.kWristGearRatio));
+            pinionMotor.setControl(new DutyCycleOut(armPositionController.calculate(getArmAngle(), targetArmAngle)));
+            wristMotor.setControl(new DutyCycleOut(wristPositionController.calculate(getWristAngle(), targetWristAngle)));
         }).withName("Arm Persistant Angle Command");
     }
 
@@ -154,7 +159,7 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
 
         SmartDashboard.putData(this.getName() + "/Through Bore Encoder", encoder);
 
-        SmartDashboard.putData(this.getName() + "/Position PID Controller", positionController);
+        SmartDashboard.putData(this.getName() + "/Arm PID Controller", armPositionController);
         
     }
 
