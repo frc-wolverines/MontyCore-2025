@@ -119,7 +119,7 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
         cachedWristAngle = targetWristAngle;
 
         return run(() -> {
-            pinionMotor.setControl(new DutyCycleOut(armPositionController.calculate(getArmAngle(), targetArmAngle)));   `
+            pinionMotor.setControl(new DutyCycleOut(armPositionController.calculate(getArmAngle(), targetArmAngle)));   
             wristMotor.setControl(new DutyCycleOut(wristPositionController.calculate(getWristAngle(), targetWristAngle)));
         }).unless(
             () -> Math.abs(targetArmAngle - getArmAngle()) < ArmConstants.kArmAngleTolerance && Math.abs(targetWristAngle - getWristAngle()) < ArmConstants.kWristAngleTolerance
