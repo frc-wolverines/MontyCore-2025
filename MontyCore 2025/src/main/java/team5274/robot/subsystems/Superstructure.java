@@ -18,11 +18,11 @@ public class Superstructure {
      * </ul>
     */
     public enum SuperstructureGoal {
-        IDLE(0.0, 0.0, 0.0, 0.0),
+        IDLE(0.0, 0.0, 0.1, 0.0),
         INTAKE_STATION(0.0, 0.0, 0.0, 0.0),
         HANG(0.0, 0.0, 0.0, 0.0),
-        SCORE_TROUGH(0.0, 0.0, 0.0, 0.0),
-        SCORE_L1(0.36, 4.0, 0.0, Math.PI / 4),
+        SCORE_TROUGH(0.0, 0.0, 1.15, 0.0),
+        SCORE_L1(0.18, 0.28, 0.51, Math.PI / 4), //0.36 Pivot, 5.0 Elev
         SCORE_L2(0.0, 0.0, 0.0, Math.PI / 4),
         SCORE_L3(0.0, 0.0, 0.0, Math.PI / 4);
 
@@ -39,10 +39,11 @@ public class Superstructure {
         }
     }
 
-    public static Command pose(RobotContainer container, SuperstructureGoal goal) {
-        return new ParallelCommandGroup(
-            container.elevatorPivot.angleCommand(goal.elevatorAngle),
-            container.elevator.heightCommand(goal.elevatorHeight)
-        );
-    }
+    // public static Command pose(RobotContainer container, SuperstructureGoal goal) {
+    //     return new ParallelCommandGroup(
+    //         container.elevatorPivot.angleCommand(goal.elevatorAngle),
+    //         container.elevator.heightCommand(goal.elevatorHeight),
+    //         container.arm.angleCommand(goal.armAngle, 0)
+    //     );
+    // }
 }

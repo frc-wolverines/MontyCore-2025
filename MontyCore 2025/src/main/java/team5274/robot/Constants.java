@@ -46,6 +46,10 @@ public class Constants {
         public static final double kDriveMaxAllowedSpeed = 1.0; //Configure
         public static final double kDriveMaxAllowedAngularSpeed = 1.0; //Configure
 
+        public static final double kXP = 0.25;
+        public static final double kYP = 0.25;
+        public static final double kRP = 0.25;
+
         public static final TalonFXConfiguration kDriveMotorConfig = new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs()
                 .withInverted(InvertedValue.CounterClockwise_Positive)
@@ -147,8 +151,7 @@ public class Constants {
     }
 
     public static class ArmConstants {
-        public static final double kArmGearRatio = 0.0; //Configure
-        public static final double kWristGearRatio = 0.0; //Configure
+        public static final double kWristGearRatio = 1 / 25; //Configure
 
         //Extrema
         public static final double kArmMinRotations = 0.0;
@@ -163,15 +166,15 @@ public class Constants {
 
         //Tolerances
         public static final double kArmAngleTolerance = 0.05; //Configure
-        public static final double kWristAngleTolerance = 0.05; //Configure
+        public static final double kWristAngleTolerance = 0.0; //Configure
 
         //PID
-        public static final double kArmP = 0.0; //Configure
+        public static final double kArmP = 1; //Configure
         public static final double kArmI = 0.0; //Configure
         public static final double kArmD = 0.0; //Configure
 
 
-        public static final double kWristP = 0.0; //Configure
+        public static final double kWristP = 0.25; //Configure
         public static final double kWristI = 0.0; //Configure
         public static final double kWristD = 0.0; //Configure
 
@@ -180,14 +183,14 @@ public class Constants {
         public static final TalonFXConfiguration kPinionConfig = new TalonFXConfiguration()
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.CounterClockwise_Positive)
-                    .withNeutralMode(NeutralModeValue.Brake));
+                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Coast));
 
         public static final TalonFXConfiguration kWristConfig = new TalonFXConfiguration()
         .withMotorOutput(
             new MotorOutputConfigs()
-                .withInverted(InvertedValue.CounterClockwise_Positive)
-                .withNeutralMode(NeutralModeValue.Brake))
+                .withInverted(InvertedValue.Clockwise_Positive)
+                .withNeutralMode(NeutralModeValue.Brake));
     }
 
     public static class PincerConstants {

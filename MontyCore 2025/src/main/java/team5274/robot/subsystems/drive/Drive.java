@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.function.Supplier;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
+
+import choreo.trajectory.SwerveSample;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -32,6 +35,7 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
     private Field2d field;
 
     private SlewRateLimiter xInputLimiter, yInputLimiter, rInputLimiter;
+    private PIDController xController, yController, rController;
 
     public static Drive _instance;
 
@@ -58,19 +62,18 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
         yInputLimiter = new SlewRateLimiter(DriveConstants.kDriveMaxAcceleration);
         rInputLimiter = new SlewRateLimiter(DriveConstants.kDriveMaxAngularAcceleration);
 
+        xController = new PIDController(DriveConstants.kXP, 0.0, 0.0);
+        yController = new PIDController(DriveConstants.kYP, 0.0, 0.0);
+        rController = new PIDController(DriveConstants.kRP, 0.0, 0.0);
+
+        resetHeading();
+        zeroSensors();
+
         setDefaultCommand(fieldAxisControlCommand(
             () -> -RobotContainer.driverController.getLeftY(), 
             RobotContainer.driverController::getLeftX, 
             RobotContainer.driverController::getRightX
         ));
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-                resetHeading();
-                zeroSensors();
-            } catch (InterruptedException e) {}
-        });
     }
 
     @Override
@@ -192,22 +195,36 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
         });
     }
 
+    public void followTrajectory(SwerveSample sample) {
+        Pose2d pose = getPose2d();
+
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+            (sample.vx + xController.calculate(pose.getX(), sample.x)) / 5.7,
+            (sample.vy + yController.calculate(pose.getY(), sample.y)) / 5.7,
+            (sample.omega + rController.calculate(pose.getRotation().getRadians(), sample.heading)),
+            getRotation2d()
+        );
+
+        setSpeeds(speeds);
+    }
+
     @Override
     public void sendTelemetry() {
-        SmartDashboard.putData(this);
-        SmartDashboard.putData(getName() + "/Gyroscope", gyroscope);
+        // SmartDashboard.putData(this);
+        // SmartDashboard.putData(getName() + "/Gyroscope", gyroscope);
 
-        modules.forEach((module) -> {
-            SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Absolute Position", module.getAbsPivotPosition());
-            SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Pivot Position", module.getPivotPosition());
-            SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Track Position", module.getTrackPosition());
-            SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Track Velocity", module.getTrackVelocity());
-        });
+        // modules.forEach((module) -> {
+        //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Absolute Position", module.getAbsPivotPosition());
+        //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Pivot Position", module.getPivotPosition());
+        //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Track Position", module.getTrackPosition());
+        //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Track Velocity", module.getTrackVelocity());
+        // });
     }
 
     @Override
     public void zeroSensors() {
-        modules.forEach((module) -> {module.zeroPivotPosition();});
+        modules.forEach((module) -> {module.zeroPivotPosition(); module.resetEncoders();});
+
         System.out.println("heheheh, zeroed");
     }
 

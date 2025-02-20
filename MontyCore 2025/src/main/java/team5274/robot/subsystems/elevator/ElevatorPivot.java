@@ -44,6 +44,7 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
         positionController.enableContinuousInput(-Math.PI, Math.PI);
         
         // setDefaultCommand(persistantAngleCommand(cachedAngle));
+        setDefaultCommand(dutyCycleCommand(() -> -RobotContainer.operatorController.getLeftY()));
     }
 
     /**
@@ -70,9 +71,9 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
      */
     public Command angleCommand(double targetAngle) {
         cachedAngle = targetAngle;
-        return run(() -> master.setControl(new DutyCycleOut(
-            positionController.calculate(getAngle(), targetAngle)
-        ))).unless(() -> Math.abs(targetAngle - getAngle()) < ElevatorPivotConstants.kAngleTolerance).withName("Elevator Pivot Angle Command");
+        return run(() -> {
+            master.setControl(new DutyCycleOut(positionController.calculate(getAngle(), targetAngle)));
+        }).unless(() -> Math.abs(targetAngle - getAngle()) < ElevatorPivotConstants.kAngleTolerance).withName("Elevator Pivot Angle Command");
     }
 
     /**

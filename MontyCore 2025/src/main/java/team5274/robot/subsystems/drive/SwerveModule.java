@@ -1,5 +1,7 @@
 package team5274.robot.subsystems.drive;
 
+import java.util.concurrent.ExecutionException;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -10,6 +12,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import team5274.lib.hardware.drivers.DeviceId;
 import team5274.robot.Constants.DriveConstants;
@@ -86,6 +89,7 @@ public class SwerveModule {
      * @return the wheel's absolute angle
      */
     public double getAbsPivotPosition() {
+        if(!encoder.isConnected()) DriverStation.reportWarning(moduleNumber + ": Encoder not found!", null);
         return -encoder.getAbsolutePosition().getValueAsDouble();
     }
 
@@ -142,6 +146,7 @@ public class SwerveModule {
     /**Zeros the pivot encoder's position to the current absolute encoders position */
     public void zeroPivotPosition() {
         pivotMotor.setPosition(getAbsPivotPosition() / DriveConstants.kPivotGearRatio);
+        if(moduleNumber == 2) System.out.println("Module 2 has been zeroed");
         System.out.println(getAbsPivotPosition() + " : " + pivotMotor.getPosition().getValueAsDouble());
     }
 

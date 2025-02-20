@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team5274.lib.control.SubsystemFrame;
+import team5274.robot.RobotContainer;
 import team5274.robot.Constants.ArmConstants;
 import team5274.robot.Constants.ElevatorPivotConstants;
 import team5274.robot.DeviceMap.ArmMap;
@@ -45,6 +46,12 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
 
         wristPositionController = new PIDController(ArmConstants.kWristP, ArmConstants.kWristI, ArmConstants.kWristD);
         wristPositionController.enableContinuousInput(-Math.PI, Math.PI);
+
+        zeroSensors();
+        setDefaultCommand(dutyCycleCommand(
+            () -> RobotContainer.operatorController.getLeftTriggerAxis() - RobotContainer.operatorController.getRightTriggerAxis(),
+            () -> RobotContainer.operatorController.pov(90).getAsBoolean() ? 0.1 : RobotContainer.operatorController.pov(270).getAsBoolean() ? -0.1 : 0.0
+        ));
     }
 
     /**
@@ -60,7 +67,7 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
      * @return an angle in radians
      */
     public double getWristAngle() {
-        return wristMotor.getRotorPosition().getValueAsDouble() * ArmConstants.kWristGearRatio * 2 * Math.PI;
+        return (wristMotor.getPosition().getValueAsDouble() / 25) * 2 * Math.PI;
     }
 
     /**
@@ -158,18 +165,23 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
         SmartDashboard.putNumber(this.getName() + "/Pinion Velocity Rotations", pinionMotor.getVelocity().getValueAsDouble());
 
         SmartDashboard.putData(this.getName() + "/Through Bore Encoder", encoder);
+        SmartDashboard.putNumber(this.getName() + "/Arm Angle", getArmAngle());
+        SmartDashboard.putNumber(this.getName() + "/Wrist Angle", getWristAngle());
+        SmartDashboard.putNumber(this.getName() + "/Cached Arm Angle", cachedArmAngle);
+
 
         SmartDashboard.putData(this.getName() + "/Arm PID Controller", armPositionController);
-        
     }
 
     @Override
     public void zeroSensors() {
         pinionMotor.setPosition(0);
+        wristMotor.setPosition(0);
     }
 
     @Override
     public void stop() {
         pinionMotor.stopMotor();
+        wristMotor.stopMotor();
     }
 }

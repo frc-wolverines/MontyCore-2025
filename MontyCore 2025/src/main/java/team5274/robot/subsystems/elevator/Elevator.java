@@ -39,8 +39,8 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
 
         controller = new PIDController(ElevatorConstants.kP, ElevatorConstants.kI, ElevatorConstants.kD);
 
-        // setDefaultCommand(dutyCycleCommand(() -> -RobotContainer.driverController.getLeftY()));
-        // setDefaultCommand(dutyCycleCommand(() -> -RobotContainer.driverController.getLeftY()));
+        setDefaultCommand(dutyCycleCommand(() -> -RobotContainer.operatorController.getRightY()));
+        // setDefaultCommand(persistantHeightCommand(cachedHeight));
         zeroSensors();
     }
 
@@ -101,6 +101,8 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
         SmartDashboard.putNumber(this.getName() + "/Slave Velocity Rotations", slave.getVelocity().getValueAsDouble());
 
         SmartDashboard.putNumber(getName() + "Height", getHeight());
+        SmartDashboard.putNumber(getName() + "Cached Height", cachedHeight);
+
     }
 
     @Override
