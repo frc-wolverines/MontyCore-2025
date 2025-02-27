@@ -29,7 +29,7 @@ public class Pincer extends SubsystemBase implements SubsystemFrame {
         intakeMotor = new SparkMax(PincerMap.kIntakeMotorId.getDeviceId(), MotorType.kBrushless);
         // colorSensor = new ColorSensorV3(Port.kMXP);
 
-        setDefaultCommand(dutyCycleCommand(() -> RobotContainer.operatorController.leftBumper().getAsBoolean() ? 0.5 : RobotContainer.operatorController.rightBumper().getAsBoolean() ? -0.5 : 0.0));
+        setDefaultCommand(dutyCycleCommand(() -> RobotContainer.operatorController.leftBumper().getAsBoolean() ? 0.6 : RobotContainer.operatorController.rightBumper().getAsBoolean() ? -0.25 : 0.0));
     }
 
     // public boolean hasGamepiece() {

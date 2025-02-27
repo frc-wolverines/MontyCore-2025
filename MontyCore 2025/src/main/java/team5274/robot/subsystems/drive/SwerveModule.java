@@ -41,7 +41,7 @@ public class SwerveModule {
         encoder = new CANcoder(map.encoderId.getDeviceId());
 
         controller = new PIDController(DriveConstants.kPivotP, DriveConstants.kPivotI, DriveConstants.kPivotD);
-        controller.enableContinuousInput(-0.5, 0.5);
+        controller.enableContinuousInput(-1, 0.999);
     }
 
     /**
@@ -57,7 +57,8 @@ public class SwerveModule {
      * @return the wheels z-axis rotation
      */
     public double getPivotPosition() {
-        return pivotMotor.getPosition().getValueAsDouble() * DriveConstants.kPivotGearRatio;
+        return getAbsPivotPosition();
+        // return getAbsPivotPosition() * DriveConstants.kPivotGearRatio;
     }
 
     /**
@@ -89,7 +90,6 @@ public class SwerveModule {
      * @return the wheel's absolute angle
      */
     public double getAbsPivotPosition() {
-        if(!encoder.isConnected()) DriverStation.reportWarning(moduleNumber + ": Encoder not found!", null);
         return -encoder.getAbsolutePosition().getValueAsDouble();
     }
 
@@ -146,7 +146,6 @@ public class SwerveModule {
     /**Zeros the pivot encoder's position to the current absolute encoders position */
     public void zeroPivotPosition() {
         pivotMotor.setPosition(getAbsPivotPosition() / DriveConstants.kPivotGearRatio);
-        if(moduleNumber == 2) System.out.println("Module 2 has been zeroed");
         System.out.println(getAbsPivotPosition() + " : " + pivotMotor.getPosition().getValueAsDouble());
     }
 

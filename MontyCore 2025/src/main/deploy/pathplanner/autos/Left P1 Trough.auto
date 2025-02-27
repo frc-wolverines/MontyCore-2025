@@ -1,0 +1,44 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Start to P1 Approach"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PoseTrough"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "P1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShortDeposit"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Single Score",
+  "choreoAuto": false
+}

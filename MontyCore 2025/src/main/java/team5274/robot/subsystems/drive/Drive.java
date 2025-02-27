@@ -5,6 +5,14 @@ import static edu.wpi.first.units.Units.Rotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -23,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team5274.lib.control.SubsystemFrame;
+import team5274.robot.Robot;
 import team5274.robot.RobotContainer;
 import team5274.robot.Constants.DriveConstants;
 
@@ -65,6 +74,28 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
         xController = new PIDController(DriveConstants.kXP, 0.0, 0.0);
         yController = new PIDController(DriveConstants.kYP, 0.0, 0.0);
         rController = new PIDController(DriveConstants.kRP, 0.0, 0.0);
+
+        RobotConfig config;
+        try{
+            config = RobotConfig.fromGUISettings();
+            AutoBuilder.configure(
+                this::getPose2d,
+                this::resetPose2d,
+                this::getSpeeds,
+                this::setSpeeds,
+                new PPHolonomicDriveController(
+                    new PIDConstants(0.0),
+                    new PIDConstants(0.0)
+                ),
+                config,
+                Robot::shouldFlipAuto,
+                this
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
 
         resetHeading();
         zeroSensors();
@@ -195,21 +226,9 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
         });
     }
 
-    public void followTrajectory(SwerveSample sample) {
-        Pose2d pose = getPose2d();
-
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            (sample.vx + xController.calculate(pose.getX(), sample.x)) / 5.7,
-            (sample.vy + yController.calculate(pose.getY(), sample.y)) / 5.7,
-            (sample.omega + rController.calculate(pose.getRotation().getRadians(), sample.heading)),
-            getRotation2d()
-        );
-
-        setSpeeds(speeds);
-    }
-
     @Override
     public void sendTelemetry() {
+        Logger.recordOutput("Pose", getPose2d());
         // SmartDashboard.putData(this);
         // SmartDashboard.putData(getName() + "/Gyroscope", gyroscope);
 
@@ -219,6 +238,7 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
         //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Track Position", module.getTrackPosition());
         //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Track Velocity", module.getTrackVelocity());
         // });
+        SmartDashboard.putString("Current Goal", RobotContainer.currentGoal.name());
     }
 
     @Override

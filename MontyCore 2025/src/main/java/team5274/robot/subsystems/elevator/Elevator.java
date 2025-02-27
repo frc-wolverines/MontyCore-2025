@@ -10,9 +10,11 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import team5274.robot.Robot;
 import team5274.robot.RobotContainer;
 import team5274.robot.Constants.DriveConstants;
 import team5274.robot.Constants.ElevatorConstants;
+import team5274.robot.Constants.ElevatorPivotConstants;
 import team5274.robot.DeviceMap.ElevatorMap;
 import team5274.lib.control.SubsystemFrame;
 
@@ -38,10 +40,11 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
         slave.setControl(new Follower(master.getDeviceID(), true));
 
         controller = new PIDController(ElevatorConstants.kP, ElevatorConstants.kI, ElevatorConstants.kD);
+        controller.setTolerance(ElevatorConstants.kHeightTolerance);
 
-        setDefaultCommand(dutyCycleCommand(() -> -RobotContainer.operatorController.getRightY()));
-        // setDefaultCommand(persistantHeightCommand(cachedHeight));
         zeroSensors();
+        setDefaultCommand(persistantHeightCommand(() -> cachedHeight));
+        // setDefaultCommand(dutyCycleCommand(() -> -RobotContainer.operatorController.getRightY()));
     }
 
     /**
@@ -67,10 +70,16 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
      * @return A terminating command which moves the Elevator to a given height
      */
     public Command heightCommand(double targetHeight) {
-        cachedHeight =  targetHeight;
-        return run(() -> master.setControl(new DutyCycleOut(
-            controller.calculate(getHeight(), targetHeight)
-        ))).unless(() -> Math.abs(targetHeight - getHeight()) < ElevatorConstants.kHeightTolerance).withName("Elevator Height Command");
+
+        return runEnd(
+            () -> master.setControl(new DutyCycleOut(
+                controller.calculate(getHeight(), targetHeight)
+            )),
+            () -> master.stopMotor()
+        ).until(
+            controller::atSetpoint
+        ).beforeStarting(() -> cachedHeight = targetHeight, this).withName("Elevator Height Command");
+
     }
 
     /**
@@ -79,9 +88,19 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
      * @return A non-terminating command which moves the Elevator to a given height and keep it there
      */
     public Command persistantHeightCommand(double targetHeight) {
-        cachedHeight = targetHeight;
         return run(() -> master.setControl(new DutyCycleOut(
             controller.calculate(getHeight(), targetHeight)
+        ))).withName("Elevator Persistant Height Command");
+    }
+
+    /**
+     * Constructs a command to control the Elevator subsystems using CTRE's built-in MotionMagic protocal to ascend to a given height (Used as the default command)
+     * @param targetHeight a length in inches relative to the collapsed height of the carriage
+     * @return A non-terminating command which moves the Elevator to a given height and keep it there
+     */
+    public Command persistantHeightCommand(Supplier<Double> targetHeight) {
+        return run(() -> master.setControl(new DutyCycleOut(
+            controller.calculate(getHeight(), targetHeight.get())
         ))).withName("Elevator Persistant Height Command");
     }
 
