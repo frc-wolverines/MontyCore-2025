@@ -5,6 +5,7 @@
 package team5274.robot;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.CustomParamsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -40,8 +41,8 @@ public class Constants {
 
         public static final double kTrackCircumference = Units.inchesToMeters(4) * Math.PI;
 
-        public static final double kDriveMaxAcceleration = 3.0; //Configure
-        public static final double kDriveMaxAngularAcceleration = 3.0; //Configure
+        public static final double kDriveMaxAcceleration = 6.0; //Configure
+        public static final double kDriveMaxAngularAcceleration = 6.0; //Configure
 
         public static final double kDriveMaxAllowedSpeed = 1.0; //Configure
         public static final double kDriveMaxAllowedAngularSpeed = 1.0; //Configure
@@ -89,11 +90,7 @@ public class Constants {
         public static final double kRotationTolerance = 0.1;
         public static final double kHeightTolerance = 0.1;
 
-        //Motion Magic®
-        public static final double kMotionMagicAcceleration = 200;
-        public static final double kMotionMagicCruiseVelocity = 100;
-
-        public static final double kP = 0.625;
+        public static final double kP = 0.6;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
 
@@ -102,21 +99,13 @@ public class Constants {
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.CounterClockwise_Positive)
-                    .withNeutralMode(NeutralModeValue.Brake))
-            .withMotionMagic(
-                new MotionMagicConfigs()
-                    .withMotionMagicAcceleration(kMotionMagicAcceleration)
-                    .withMotionMagicCruiseVelocity(kMotionMagicCruiseVelocity));
+                    .withNeutralMode(NeutralModeValue.Brake));
 
         public static final TalonFXConfiguration kSlaveConfig = new TalonFXConfiguration()
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.Clockwise_Positive)
-                    .withNeutralMode(NeutralModeValue.Brake))
-            .withMotionMagic(
-                new MotionMagicConfigs()
-                    .withMotionMagicAcceleration(kMotionMagicAcceleration)
-                    .withMotionMagicCruiseVelocity(kMotionMagicCruiseVelocity));
+                    .withNeutralMode(NeutralModeValue.Brake));
     }
 
     public static class ElevatorPivotConstants {
@@ -132,9 +121,13 @@ public class Constants {
         public static final double kAngleTolerance = 0.05;
 
         //PID
-        public static final double kP = 3.0; //Configure
-        public static final double kI = 0.0; //Configure
-        public static final double kD = 0.0; //Configure
+        public static final double kP = 6.5; 
+        public static final double kI = 0.0; 
+        public static final double kD = 0.0; 
+
+        public static final double kPP = 3.5; 
+        public static final double kPI = 0.0; 
+        public static final double kPD = 0.0; 
 
         //Hardware Configurations
         public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration()
@@ -169,12 +162,12 @@ public class Constants {
         public static final double kWristAngleTolerance = 0.2; //Configure
 
         //PID
-        public static final double kArmP = 0.5; //Configure
+        public static final double kArmP = 0.75; //Configure
         public static final double kArmI = 0.0; //Configure
         public static final double kArmD = 0.0; //Configure
 
 
-        public static final double kWristP = 0.05; //Configure
+        public static final double kWristP = 0.08; //Configure
         public static final double kWristI = 0.0; //Configure
         public static final double kWristD = 0.0; //Configure
 
@@ -184,7 +177,10 @@ public class Constants {
             .withMotorOutput(
                 new MotorOutputConfigs()
                     .withInverted(InvertedValue.CounterClockwise_Positive)
-                    .withNeutralMode(NeutralModeValue.Brake));
+                    .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(20)
+                .withStatorCurrentLimitEnable(true));
 
         public static final TalonFXConfiguration kWristConfig = new TalonFXConfiguration()
         .withMotorOutput(

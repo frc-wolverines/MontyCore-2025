@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team5274.lib.control.SubsystemFrame;
 import team5274.robot.RobotContainer;
@@ -19,6 +20,7 @@ import team5274.robot.subsystems.Superstructure.SuperstructureGoal;
 
 public class Arm extends SubsystemBase implements SubsystemFrame {
     private double cachedArmAngle = SuperstructureGoal.IDLE.armAngle;
+    private double initArmAngle;
     private double cachedWristAngle = 0.0;
     private TalonFX pinionMotor, wristMotor;
     DutyCycleEncoder encoder;
@@ -50,11 +52,12 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
         wristPositionController.setTolerance(ArmConstants.kWristAngleTolerance);
 
         zeroSensors();
+        // setDefaultCommand(resistDriftFromInit());
         setDefaultCommand(persistantAngleCommand(() -> cachedArmAngle, () -> cachedWristAngle));
-        // setDefaultCommand(dutyCycleCommand(
-        //     () -> RobotContainer.operatorController.getLeftTriggerAxis() - RobotContainer.operatorController.getRightTriggerAxis(),
-        //     () -> RobotContainer.operatorController.pov(90).getAsBoolean() ? 0.05 : RobotContainer.operatorController.pov(270).getAsBoolean() ? -0.05 : 0
-        // ));
+    }
+
+    public void init() {
+        setDefaultCommand(persistantAngleCommand(() -> cachedArmAngle, () -> cachedWristAngle));
     }
 
     /**
@@ -94,7 +97,9 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
     public Command orientArm(double targetArmAngle) {
         return runEnd(
             () -> {
-                pinionMotor.setControl(new DutyCycleOut(armPositionController.calculate(getArmAngle(), targetArmAngle)));
+                pinionMotor.setControl(new DutyCycleOut(
+                    Math.min(0.5, Math.max(armPositionController.calculate(getArmAngle(), targetArmAngle), -0.5))
+                ));
                 // wristMotor.setControl(new DutyCycleOut(wristPositionController.calculate(getWristAngle(), cachedWristAngle)));
             },
             () -> {
@@ -114,7 +119,7 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
         return runEnd(
             () -> {
                 wristMotor.setControl(new DutyCycleOut(
-                    Math.min(0.5, Math.max(wristPositionController.calculate(getWristAngle(), targetWristAngle), -0.5))
+                    Math.min(0.25, Math.max(wristPositionController.calculate(getWristAngle(), targetWristAngle), -0.25))
                 ));
                 // wristMotor.setControl(new DutyCycleOut(wristPositionController.calculate(getWristAngle(), cachedWristAngle)));
             },
@@ -154,6 +159,14 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
         }).withName("Arm Persistant Angle Command");
     }
 
+    // public Command resistDriftFromInit() {
+    //     return Commands.none();
+    //     // return runEnd(
+    //     //     () -> pinionMotor.setControl(new DutyCycleOut(armPositionController.calculate(getArmAngle(), initArmAngle))), 
+    //     //     () -> pinionMotor.stopMotor()
+    //     // ).beforeStarting(() -> initArmAngle = getArmAngle()).ignoringDisable(true).withName("Resist the Drift!");
+    // }
+
     @Override
     public void periodic() {
         if(!encoder.isConnected()) {
@@ -176,9 +189,10 @@ public class Arm extends SubsystemBase implements SubsystemFrame {
         SmartDashboard.putNumber(this.getName() + "/Arm Angle", getArmAngle());
         SmartDashboard.putNumber(this.getName() + "/Wrist Angle", getWristAngle());
         SmartDashboard.putNumber(this.getName() + "/Cached Arm Angle", cachedArmAngle);
+        SmartDashboard.putNumber(this.getName() + "/Init Arm Angle", initArmAngle);
 
         SmartDashboard.putData(this.getName() + "/Arm PID Controller", armPositionController);
-        SmartDashboard.putBoolean("Arm Encoder Connected", encoder.isConnected());
+        SmartDashboard.putBoolean(this.getName() + "/Encoder Connected", encoder.isConnected());
     }
 
     @Override

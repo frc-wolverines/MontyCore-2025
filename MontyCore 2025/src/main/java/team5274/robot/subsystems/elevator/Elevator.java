@@ -114,14 +114,15 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
         SmartDashboard.putData(this);
 
         SmartDashboard.putNumber(this.getName() + "/Master Position Rotations", master.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber(this.getName() + "/Master Stator Current", master.getStatorCurrent().getValueAsDouble());
+
         SmartDashboard.putNumber(this.getName() + "/Master Velocity Rotations", master.getVelocity().getValueAsDouble());
 
         SmartDashboard.putNumber(this.getName() + "/Slave Position Rotations", slave.getPosition().getValueAsDouble());
         SmartDashboard.putNumber(this.getName() + "/Slave Velocity Rotations", slave.getVelocity().getValueAsDouble());
 
-        SmartDashboard.putNumber(getName() + "Height", getHeight());
-        SmartDashboard.putNumber(getName() + "Cached Height", cachedHeight);
-
+        SmartDashboard.putNumber(getName() + "/Height", getHeight());
+        SmartDashboard.putNumber(getName() + "/Cached Height", cachedHeight);
     }
 
     @Override

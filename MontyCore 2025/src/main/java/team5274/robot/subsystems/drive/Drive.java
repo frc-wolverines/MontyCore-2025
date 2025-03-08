@@ -65,7 +65,7 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
             DriveConstants.kDriveKinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d());
         field = new Field2d();
 
-        SmartDashboard.putData(field);
+        SmartDashboard.putData("Robot/Field", field);
 
         xInputLimiter = new SlewRateLimiter(DriveConstants.kDriveMaxAcceleration);
         yInputLimiter = new SlewRateLimiter(DriveConstants.kDriveMaxAcceleration);
@@ -228,8 +228,7 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
 
     @Override
     public void sendTelemetry() {
-        Logger.recordOutput("Pose", getPose2d());
-        // SmartDashboard.putData(this);
+        SmartDashboard.putData(this);
         // SmartDashboard.putData(getName() + "/Gyroscope", gyroscope);
 
         // modules.forEach((module) -> {
@@ -238,7 +237,6 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
         //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Track Position", module.getTrackPosition());
         //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Track Velocity", module.getTrackVelocity());
         // });
-        SmartDashboard.putString("Current Goal", RobotContainer.currentGoal.name());
     }
 
     @Override

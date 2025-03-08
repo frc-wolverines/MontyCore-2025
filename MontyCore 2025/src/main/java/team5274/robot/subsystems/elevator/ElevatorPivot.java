@@ -19,11 +19,12 @@ import team5274.robot.Constants.ElevatorPivotConstants;
 import team5274.robot.DeviceMap.ElevatorPivotMap;
 
 public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
-    private double cachedAngle = 0.65; //Cached angle to hold at
+    private double cachedAngle = 0.0; //Cached angle to hold at
     private TalonFX master, slave;
     private DutyCycleEncoder encoder;
 
     private PIDController positionController;
+    private PIDController persistantController;
 
     private static ElevatorPivot _instance;
 
@@ -45,6 +46,10 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
         positionController = new PIDController(ElevatorPivotConstants.kP, ElevatorPivotConstants.kI, ElevatorPivotConstants.kD);
         positionController.enableContinuousInput(-Math.PI, Math.PI);
         positionController.setTolerance(ElevatorPivotConstants.kAngleTolerance);
+
+        persistantController = new PIDController(ElevatorPivotConstants.kPP, ElevatorPivotConstants.kPI, ElevatorPivotConstants.kPD);
+        persistantController.enableContinuousInput(-Math.PI, Math.PI);
+        persistantController.setTolerance(ElevatorPivotConstants.kAngleTolerance);
         
         // setDefaultCommand(dutyCycleCommand(() -> -RobotContainer.operatorController.getLeftY()));
         // setDefaultCommand(run(() -> {}).withName("ElevatorPivot Idle"));
@@ -91,7 +96,7 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
      */
     public Command persistantAngleCommand(double targetAngle) {
         return run(() -> master.setControl(new DutyCycleOut(
-            positionController.calculate(getAngle(), targetAngle)
+            persistantController.calculate(getAngle(), targetAngle)
         ))).withName("ElevatorPivot Persistant Angle Command");
     }
 
@@ -102,7 +107,7 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
      */
     public Command persistantAngleCommand(Supplier<Double> targetAngle) {
         return run(() -> master.setControl(new DutyCycleOut(
-            positionController.calculate(getAngle(), targetAngle.get())
+            persistantController.calculate(getAngle(), targetAngle.get())
         ))).withName("Elevator Pivot Persistant Angle Command");
     }
 
@@ -131,7 +136,7 @@ public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
         SmartDashboard.putData(this.getName() + "/Position PID Controller", positionController);
         SmartDashboard.putNumber(getName() + "/Cached Angle", cachedAngle);
 
-        SmartDashboard.putBoolean("Elevator Encoder Connected", encoder.isConnected());
+        SmartDashboard.putBoolean(this.getName() + "/Encoder Connected", encoder.isConnected());
     }
 
     @Override

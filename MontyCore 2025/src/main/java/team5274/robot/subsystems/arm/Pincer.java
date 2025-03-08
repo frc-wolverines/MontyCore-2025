@@ -3,8 +3,13 @@ package team5274.robot.subsystems.arm;
 import java.util.function.Supplier;
 
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.servohub.ServoHub.ResetMode;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,7 +34,7 @@ public class Pincer extends SubsystemBase implements SubsystemFrame {
         intakeMotor = new SparkMax(PincerMap.kIntakeMotorId.getDeviceId(), MotorType.kBrushless);
         // colorSensor = new ColorSensorV3(Port.kMXP);
 
-        setDefaultCommand(dutyCycleCommand(() -> RobotContainer.operatorController.leftBumper().getAsBoolean() ? 0.6 : RobotContainer.operatorController.rightBumper().getAsBoolean() ? -0.25 : 0.0));
+        setDefaultCommand(dutyCycleCommand(() -> RobotContainer.operatorController.leftBumper().getAsBoolean() ? 0.25 : RobotContainer.operatorController.rightBumper().getAsBoolean() ? -0.3 : 0.0));
     }
 
     // public boolean hasGamepiece() {
