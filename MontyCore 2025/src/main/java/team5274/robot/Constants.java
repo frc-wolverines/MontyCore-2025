@@ -13,7 +13,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import team5274.robot.subsystems.drive.SwerveModule.SwerveModuleConfiguration;
@@ -41,11 +43,11 @@ public class Constants {
 
         public static final double kTrackCircumference = Units.inchesToMeters(4) * Math.PI;
 
-        public static final double kDriveMaxAcceleration = 6.0; //Configure
-        public static final double kDriveMaxAngularAcceleration = 6.0; //Configure
+        public static final double kDriveMaxAllowedSpeed = 5.450; //Configure
+        public static final double kDriveMaxAllowedAngularSpeed = 5.450; //Configure
 
-        public static final double kDriveMaxAllowedSpeed = 1.0; //Configure
-        public static final double kDriveMaxAllowedAngularSpeed = 1.0; //Configure
+        public static final double kDriveMaxAcceleration = 6.0 * kDriveMaxAllowedSpeed; //Configure
+        public static final double kDriveMaxAngularAcceleration = 6.0 * kDriveMaxAllowedAngularSpeed; //Configure
 
         public static final double kXP = 0.25;
         public static final double kYP = 0.25;
@@ -158,7 +160,7 @@ public class Constants {
         public static final double kWristMaxAngle = 0.0; //Configure
 
         //Tolerances
-        public static final double kArmAngleTolerance = 0.05; //Configure
+        public static final double kArmAngleTolerance = 0.1; //Configure
         public static final double kWristAngleTolerance = 0.2; //Configure
 
         //PID
@@ -196,5 +198,19 @@ public class Constants {
         //Setpoints
         public static final double kIntakeDutyCycle = 1.0;
         public static final double kDepositDutyCycle = -1.0;
+    }
+
+    public static class VisionConstants {
+        public static final Translation3d cameraTranslation = new Translation3d(
+            0.046,
+            0.277,
+            -0.259
+        );
+
+        public static final Rotation3d cameraRotation = new Rotation3d(
+            0,
+            70,
+            15
+        );
     }
 }

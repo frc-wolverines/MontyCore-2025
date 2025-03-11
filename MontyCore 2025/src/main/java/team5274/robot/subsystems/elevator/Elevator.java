@@ -7,9 +7,11 @@ import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team5274.robot.Robot;
 import team5274.robot.RobotContainer;
 import team5274.robot.Constants.DriveConstants;
@@ -21,6 +23,7 @@ import team5274.lib.control.SubsystemFrame;
 public class Elevator extends SubsystemBase implements SubsystemFrame {
     private double cachedHeight = 0.0;
     private TalonFX master, slave;
+    private DigitalInput limit = new DigitalInput(0);
 
     private PIDController controller;
 
@@ -47,6 +50,10 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
         // setDefaultCommand(dutyCycleCommand(() -> -RobotContainer.operatorController.getRightY()));
     }
 
+    public boolean isAtLowest() {
+        return !limit.get();
+    }
+
     /**
      * Retrieves the current height of the Elevator carriage, relative to the collapsed height of the carriage
      * @return a length in inches
@@ -70,7 +77,6 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
      * @return A terminating command which moves the Elevator to a given height
      */
     public Command heightCommand(double targetHeight) {
-
         return runEnd(
             () -> master.setControl(new DutyCycleOut(
                 controller.calculate(getHeight(), targetHeight)
@@ -79,7 +85,6 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
         ).until(
             controller::atSetpoint
         ).beforeStarting(() -> cachedHeight = targetHeight, this).withName("Elevator Height Command");
-
     }
 
     /**
@@ -123,12 +128,17 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
 
         SmartDashboard.putNumber(getName() + "/Height", getHeight());
         SmartDashboard.putNumber(getName() + "/Cached Height", cachedHeight);
+        SmartDashboard.putBoolean(getName() + "/At Lowest", isAtLowest());
     }
 
     @Override
     public void zeroSensors() {
         master.setPosition(0.0);
         slave.setPosition(0.0);
+    }
+
+    public Command homeCommand() {
+        return run(() -> zeroSensors()).withTimeout(0.1).withName("Home Elevator");
     }
 
     @Override

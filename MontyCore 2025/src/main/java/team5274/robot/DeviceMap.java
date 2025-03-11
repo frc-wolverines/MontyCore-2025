@@ -36,7 +36,11 @@ public class DeviceMap {
     public static class ElevatorPivotMap {
         public static final DeviceId kMasterMotorId = new DeviceId(14, Bus.CAN); 
         public static final DeviceId kSlaveMotorId = new DeviceId(15, Bus.CAN); 
-        public static final DeviceId kEncoderId = new DeviceId(2, Bus.DIO); 
+        public static final DeviceId kEncoderId = new DeviceId(1, Bus.DIO); 
+    }
+
+    public static class ClimberClampMap {
+        public static final DeviceId clampMotorId = new DeviceId(21, Bus.CAN);
     }
 
     public static class ElevatorMap {
@@ -47,7 +51,7 @@ public class DeviceMap {
     public static class ArmMap {
         public static final DeviceId kPinionMotorId = new DeviceId(18, Bus.CAN); 
         public static final DeviceId kWristMotorId = new DeviceId(19, Bus.CAN);
-        public static final DeviceId kEncoderId = new DeviceId(3, Bus.DIO); 
+        public static final DeviceId kEncoderId = new DeviceId(2, Bus.DIO); 
     }
 
     public static class PincerMap {

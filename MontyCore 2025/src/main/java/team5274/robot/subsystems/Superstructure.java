@@ -32,18 +32,18 @@ public class Superstructure {
      * </ul>
     */
     public enum SuperstructureGoal {
-        IDLE(0.65, 0.0, 4.33, 0.0),
-        INTAKE_STATION(0.42, 1.0, 4.43, 0.0),
+        IDLE(0.64, 0.0, 4.33, 0.0),
+        INTAKE_STATION(0.51, 0.3, 4.33, 0.0),
         HANG(0.0, 0.0, 4.22, 0.0),
-        SCORE_TROUGH(0.32, 0.42, 5.07, 0.0),
-        PREP_L1(0.44, 1.31, 4.44, Math.PI / 2), 
-        SCORE_L1(0.44, 1.31, 4.8, Math.PI / 2), 
-        PREP_L2(0.3, 2.7, 4.46, Math.PI / 2),
-        SCORE_L2(0.3, 2.7, 4.9, Math.PI / 2),
-        PREP_L3(0.08, 5.85, 4.98, Math.PI / 2),
-        SCORE_L3(0.08, 5.85, 5.42, Math.PI / 2),
-        ALGAE_L2(0.13, 2.53, 5.12, 0.0),
-        ALGAE_L3(0.02, 4.75, 5.52, 0.0),
+        SCORE_TROUGH(0.33, 0.0, 4.9, 0.0),
+        PREP_L1(0.33, 0.79, 4.49, Math.PI / 2), 
+        SCORE_L1(0.33, 0.79, 4.98, Math.PI / 2), 
+        PREP_L2(0.25, 1.52, 4.3, Math.PI / 2),
+        SCORE_L2(0.25, 1.52, 4.97, Math.PI / 2),
+        PREP_L3(0.065, 3.5, 4.85, Math.PI / 2),
+        SCORE_L3(0.065, 3.5, 5.3, Math.PI / 2),
+        ALGAE_L2(0.46, 1.04, 4.32, 0.0),
+        ALGAE_L3(0.31, 1.83, 4.35, 0.0),
 
         DEBUG(0.0, 0.0, 4.33, 0.0),
         DEBUG_PLACE(0.0, 1.0, 4.33, 0.0),
@@ -71,7 +71,7 @@ public class Superstructure {
             container.arm.orientWrist(goal.get().wristAngle)
         };
 
-        if(goal.get().elevatorHeight <= container.elevator.getHeight() || goal.get() == SuperstructureGoal.IDLE) Collections.reverse(Arrays.asList(commands)); //Checks if the elevator goal is lower than the current elevator height
+        if(goal.get().elevatorHeight < RobotContainer.currentGoal.elevatorHeight || goal.get() == SuperstructureGoal.IDLE) Collections.reverse(Arrays.asList(commands)); //Checks if the elevator goal is lower than the current elevator height
         return new SequentialCommandGroup(commands).beforeStarting(() -> RobotContainer.currentGoal = goal.get()).withName("Pose to " + goal.get().name());
     }
     

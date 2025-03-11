@@ -28,6 +28,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    SmartDashboard.putBoolean("Elevator Trigger", RobotContainer.elevatorAtLowest.getAsBoolean());
     SmartDashboard.putNumber("Robot/Battery Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("Robot/Brownout Voltage", RobotController.getBrownoutVoltage());
     SmartDashboard.putString("Robot/Current Goal", RobotContainer.currentGoal.name());

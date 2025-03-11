@@ -124,7 +124,7 @@ public class SwerveModule {
         //Runs optimization algorithm to minimize distance traveled by the pivot motor
         state.optimize(getPivotRot2d());
 
-        driveMotor.set(state.speedMetersPerSecond);
+        driveMotor.set(state.speedMetersPerSecond / 5.450);
 
         pivotMotor.set(
             controller.calculate(getPivotPosition(), state.angle.getRotations())

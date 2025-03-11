@@ -17,9 +17,10 @@ import team5274.robot.RobotContainer;
 import team5274.robot.Constants.ElevatorConstants;
 import team5274.robot.Constants.ElevatorPivotConstants;
 import team5274.robot.DeviceMap.ElevatorPivotMap;
+import team5274.robot.subsystems.Superstructure.SuperstructureGoal;
 
 public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
-    private double cachedAngle = 0.0; //Cached angle to hold at
+    private double cachedAngle = SuperstructureGoal.IDLE.elevatorAngle; //Cached angle to hold at
     private TalonFX master, slave;
     private DutyCycleEncoder encoder;
 
