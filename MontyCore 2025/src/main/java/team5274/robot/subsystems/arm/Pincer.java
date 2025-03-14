@@ -34,7 +34,7 @@ public class Pincer extends SubsystemBase implements SubsystemFrame {
         intakeMotor = new SparkMax(PincerMap.kIntakeMotorId.getDeviceId(), MotorType.kBrushless);
         // colorSensor = new ColorSensorV3(Port.kMXP);
 
-        setDefaultCommand(dutyCycleCommand(() -> RobotContainer.operatorController.leftBumper().getAsBoolean() ? 0.25 : RobotContainer.operatorController.rightBumper().getAsBoolean() ? -0.3 : 0.0));
+        setDefaultCommand(dutyCycleCommand(() -> RobotContainer.operatorController.leftBumper().getAsBoolean() ? 0.25 : RobotContainer.operatorController.rightBumper().getAsBoolean() ? -0.225 : 0.0));
     }
 
     // public boolean hasGamepiece() {
@@ -58,6 +58,8 @@ public class Pincer extends SubsystemBase implements SubsystemFrame {
 
         SmartDashboard.putNumber(getName() + "/Intake Position Rotations", intakeMotor.getEncoder().getPosition());
         SmartDashboard.putNumber(getName() + "/Intake Velocity Rotations", intakeMotor.getEncoder().getVelocity());
+
+        SmartDashboard.putNumber(getName() + "/Intake Tempurature", intakeMotor.getMotorTemperature());
 
         // SmartDashboard.putNumber(getName() + "/Color Sensor Proximity", colorSensor.getProximity());
         // SmartDashboard.putString(getName() + "/Color Sensor Color", "" + colorSensor.getRed() + ", " + (colorSensor.getGreen() / 2) + ", " + colorSensor.getBlue());

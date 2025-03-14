@@ -54,6 +54,10 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
         return !limit.get();
     }
 
+    public boolean isAtLowestValid() {
+        return !limit.get() && getHeight() < 0.5;
+    }
+
     /**
      * Retrieves the current height of the Elevator carriage, relative to the collapsed height of the carriage
      * @return a length in inches
@@ -128,7 +132,7 @@ public class Elevator extends SubsystemBase implements SubsystemFrame {
 
         SmartDashboard.putNumber(getName() + "/Height", getHeight());
         SmartDashboard.putNumber(getName() + "/Cached Height", cachedHeight);
-        SmartDashboard.putBoolean(getName() + "/At Lowest", isAtLowest());
+        SmartDashboard.putBoolean(getName() + "/At Lowest", isAtLowestValid());
     }
 
     @Override
