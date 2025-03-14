@@ -1,26 +1,12 @@
 package team5274.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Newton;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
-
-import com.ctre.phoenix6.signals.RobotEnableValue;
-
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import team5274.robot.Robot;
 import team5274.robot.RobotContainer;
-import team5274.robot.subsystems.elevator.Elevator;
 
 public class Superstructure {
 
@@ -34,7 +20,7 @@ public class Superstructure {
      * <li> Wrist angle (in degrees relative to the end-affector being horizontal) </li>
      * </ul>
     */
-    public enum SuperstructureGoal {
+    public enum SuperstructurePose {
         IDLE(0.64, 0.0, 4.33, 0.0),
         INTAKE_STATION(0.51, 0.55, 4.33, 0.0),
         HANG(0.0, 0.0, 4.22, 0.0),
@@ -58,7 +44,7 @@ public class Superstructure {
         public final double armAngle;
         public final double wristAngle;
 
-        private SuperstructureGoal(double elevator_angle, double elevator_height, double arm_angle, double wrist_angle) {
+        private SuperstructurePose(double elevator_angle, double elevator_height, double arm_angle, double wrist_angle) {
             this.elevatorAngle = elevator_angle;
             this.elevatorHeight = elevator_height;
             this.armAngle = arm_angle;
@@ -66,45 +52,42 @@ public class Superstructure {
         }
     }
 
-    public static Command pose(RobotContainer container, Supplier<SuperstructureGoal> goal) {
-        // Command[] commands = {
-            // container.elevatorPivot.angleCommand(goal.get().elevatorAngle),
-            // container.elevator.heightCommand(goal.get().elevatorHeight),
-            // container.arm.orientArm(goal.get().armAngle),
-            // container.arm.orientWrist(goal.get().wristAngle)
-        // };
+    public static Command pose(RobotContainer container, SuperstructurePose pose) {
+        // List<Command> poseSequence = new ArrayList<Command>(Arrays.asList(
+        //     Commands.none().withTimeout(1).withName("Elevator Pivots Now"),
+        //     Commands.none().withTimeout(1).withName("Elevator Extends/Collapses Now"),
+        //     Commands.none().withTimeout(1).withName("Arm Pivots Now"),
+        //     Commands.none().withTimeout(1).withName("Wrist Rotates Now")
+        // ));
 
-        Command[] commands = {};
-        Command[] normal = {
-            Commands.idle(container.drive).withTimeout(1).withName("Elevator Rotates Now"),
-            Commands.idle(container.drive).withTimeout(1).withName("Elevator Moves Now"),
-            Commands.idle(container.drive).withTimeout(1).withName("Arm Rotates Now"),
-            Commands.idle(container.drive).withTimeout(1).withName("Wrist Rotates Now")
-        };
-        Command[] inverse = {
-            Commands.idle(container.drive).withTimeout(1).withName("Wrist Rotates Now"),
-            Commands.idle(container.drive).withTimeout(1).withName("Arm Rotates Now"),
-            Commands.idle(container.drive).withTimeout(1).withName("Elevator Moves Now"),
-            Commands.idle(container.drive).withTimeout(1).withName("Elevator Rotates Now")
-        };
+        List<Command> poseSequence = new ArrayList<Command>(Arrays.asList(
+            container.elevatorPivot.angleCommand(pose.elevatorAngle),
+            container.elevator.heightCommand(pose.elevatorHeight),
+            container.arm.orientArm(pose.armAngle),
+            container.arm.orientWrist(pose.wristAngle)
+        ));
 
-         //Checks if the elevator goal is lower than the current elevator height
-        //  if(goal.get().elevatorHeight < RobotContainer.getCurrentGoal().elevatorHeight || goal.get() == SuperstructureGoal.IDLE) Collections.reverse(Arrays.asList(commands));
-        return new SequentialCommandGroup(commands).beforeStarting(() -> {
-            for(Command command : commands) {
-                System.out.println(command.getName());
-            }
-        }).beforeStarting(() -> RobotContainer.currentGoal = goal.get()).beforeStarting(() -> {
-            System.out.println("");
-            System.out.println(isRetracting(RobotContainer::getCurrentGoal, goal) + "   " + RobotContainer.getCurrentGoal() + " -> " + goal.get());
-            if(isRetracting(RobotContainer::getCurrentGoal, goal)) commands = inverse;
-        });
+        return Commands.sequence(poseSequence.toArray(new Command[4]))
+            .beforeStarting(() -> {
+                RobotContainer._robotPose = pose; 
+            })
+            .beforeStarting(() -> { 
+                if(!willCollapse(pose) && !isOriginal(poseSequence)) Collections.reverse(poseSequence);
+                if(willCollapse(pose) && isOriginal(poseSequence)) Collections.reverse(poseSequence);
+                System.out.println("\n");
+                System.out.println("Will Collapse: " + willCollapse(pose));
+                System.out.println("Change: " + RobotContainer._robotPose + " -> " + pose);
+                System.out.println("Order:");
+                for(Command command : poseSequence) System.out.println("  " + command.getName());
+            })
+            .withName("Pose to " + pose);
     }
 
-    public static boolean isRetracting(Supplier<SuperstructureGoal> currentGoal, Supplier<SuperstructureGoal> newGoal) {
-        boolean elevatorRetracting = newGoal.get().elevatorHeight < currentGoal.get().elevatorHeight;
-        boolean vetoExtending = newGoal.get() == SuperstructureGoal.IDLE;
+    public static boolean isOriginal(List<Command> sequence) {
+        return sequence.get(0).getName() == "Elevator Pivots Now";
+    }
 
-        return elevatorRetracting || vetoExtending;
+    public static boolean willCollapse(SuperstructurePose newPose) {
+        return newPose.elevatorHeight < RobotContainer._robotPose.elevatorHeight;
     }
 }
