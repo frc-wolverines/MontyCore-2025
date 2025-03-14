@@ -6,10 +6,6 @@ package team5274.robot;
 
 import java.util.function.Supplier;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -24,7 +20,7 @@ import team5274.lib.util.ConditionalUitls;
 import team5274.lib.util.TactileAlert;
 import team5274.robot.subsystems.ClimberClamp;
 import team5274.robot.subsystems.Superstructure;
-import team5274.robot.subsystems.Superstructure.SuperstructureGoal;
+import team5274.robot.subsystems.Superstructure.SuperstructurePose;
 import team5274.robot.subsystems.arm.Arm;
 import team5274.robot.subsystems.arm.Pincer;
 import team5274.robot.subsystems.drive.Drive;
@@ -34,19 +30,18 @@ import team5274.robot.subsystems.elevator.ElevatorPivot;
 public class RobotContainer {
 
   public final static boolean debugMode = false;
-  public static SuperstructureGoal currentGoal = SuperstructureGoal.IDLE;
+  public static SuperstructurePose _robotPose = SuperstructurePose.IDLE;
   // public final SendableChooser<Command> autoChooser;
 
   public final static CommandXboxController driverController = new CommandXboxController(0);
   public final static CommandXboxController operatorController = new CommandXboxController(1);
 
-  // public ElevatorPivot elevatorPivot = ElevatorPivot.get();
-  // public Elevator elevator = Elevator.get();
-  // public ClimberClamp climberClamp = ClimberClamp.get();
-  // public static Trigger elevatorAtLowest;
+  public ElevatorPivot elevatorPivot = ElevatorPivot.get();
+  public Elevator elevator = Elevator.get();
+  public static Trigger elevatorAtLowest;
 
-  // public Arm arm = Arm.get();
-  // public Pincer pincer = Pincer.get();
+  public Arm arm = Arm.get();
+  public Pincer pincer = Pincer.get();
 
   public Drive drive = Drive.get();
 
@@ -117,19 +112,17 @@ public class RobotContainer {
             .withTimeout(2.9))
     );
 
-    // elevatorAtLowest = new Trigger(elevator::isAtLowestValid);
-    // elevatorAtLowest.onTrue(elevator.homeCommand());
+    elevatorAtLowest = new Trigger(elevator::isAtLowestValid);
+    elevatorAtLowest.onTrue(elevator.homeCommand());
 
-    // if(debugMode) {
-    //   // elevatorPivot.setDefaultCommand(elevatorPivot.dutyCycleCommand(() -> 0.0));
-    //   // elevator.setDefaultCommand(elevator.dutyCycleCommand(() -> 0.0));
-    //   elevatorPivot.setDefaultCommand(elevatorPivot.dutyCycleCommand(() -> -operatorController.getLeftY()));
-    //   elevator.setDefaultCommand(elevator.dutyCycleCommand(() -> -operatorController.getRightY()));
-    //   arm.setDefaultCommand(arm.dutyCycleCommand(
-    //     () -> operatorController.getLeftTriggerAxis() * 0.15 - operatorController.getRightTriggerAxis() * 0.15,
-    //     () -> 0.0
-    //   ));
-    // }
+    if(debugMode) {
+      elevatorPivot.setDefaultCommand(elevatorPivot.dutyCycleCommand(() -> -operatorController.getLeftY()));
+      elevator.setDefaultCommand(elevator.dutyCycleCommand(() -> -operatorController.getRightY()));
+      arm.setDefaultCommand(arm.dutyCycleCommand(
+        () -> operatorController.getLeftTriggerAxis() * 0.15 - operatorController.getRightTriggerAxis() * 0.15,
+        () -> 0.0
+      ));
+    }
 
     // autoChooser = AutoBuilder.buildAutoChooser();
     // SmartDashboard.putData("Auto", autoChooser);
@@ -138,49 +131,29 @@ public class RobotContainer {
   private void configureBindings() {
     driverController.start().onTrue(drive.reset());
     if(debugMode) return;
-    driverController.rightBumper().toggleOnTrue(Superstructure.pose(this, () -> SuperstructureGoal.ALGAE_L2));
-    driverController.leftBumper().toggleOnTrue(Superstructure.pose(this, () -> SuperstructureGoal.ALGAE_L3));
+    driverController.rightBumper().toggleOnTrue(Superstructure.pose(this, SuperstructurePose.ALGAE_L2));
+    driverController.leftBumper().toggleOnTrue(Superstructure.pose(this, SuperstructurePose.ALGAE_L3));
 
     driverController.a().onTrue(drive.getDefaultCommand());
 
-    SmartDashboard.putData(new PathPlannerAuto("Taxi Left"));
+    operatorController.a().onTrue(Superstructure.pose(this, SuperstructurePose.IDLE));
+    operatorController.y().toggleOnTrue(Superstructure.pose(this, SuperstructurePose.INTAKE_STATION));
 
-    operatorController.a().onTrue(Superstructure.pose(this, () -> SuperstructureGoal.IDLE));
-    operatorController.y().toggleOnTrue(Superstructure.pose(this, () -> SuperstructureGoal.INTAKE_STATION));
-    
-    // operatorController.start().toggleOnTrue(Superstructure.pose(this, () -> SuperstructureGoal.DEBUG));
+    operatorController.x().and(() -> _robotPose == SuperstructurePose.PREP_L1).onTrue(Superstructure.pose(this, SuperstructurePose.SCORE_L1));
+    operatorController.x().and(() -> _robotPose == SuperstructurePose.PREP_L2).onTrue(Superstructure.pose(this, SuperstructurePose.SCORE_L2));
+    operatorController.x().and(() -> _robotPose == SuperstructurePose.PREP_L3).onTrue(Superstructure.pose(this, SuperstructurePose.SCORE_L3));
 
-    // operatorController.a().toggleOnTrue(elevator.heightCommand(0.0));
-    // operatorController.b().toggleOnTrue(elevator.heightCommand(1));
-    // operatorController.y().toggleOnTrue(elevator.heightCommand(2));
-
-    // operatorController.a().toggleOnTrue(Superstructure.pose(this, () -> SuperstructureGoal.DEBUG));
-    // operatorController.b().toggleOnTrue(Superstructure.pose(this, () -> SuperstructureGoal.DEBUG_PLACE));
-    // operatorController.y().toggleOnTrue(Superstructure.pose(this, () -> SuperstructureGoal.DEBUG_PLACE2));
-
-    // operatorController.a().toggleOnTrue(Superstructure.pose(this, () -> SuperstructureGoal.IDLE));
-    // operatorController.y().toggleOnTrue(Superstructure.pose(this, () -> SuperstructureGoal.INTAKE_STATION));
-
-    operatorController.x().and(() -> currentGoal == SuperstructureGoal.PREP_L1).onTrue(Superstructure.pose(this, () -> SuperstructureGoal.SCORE_L1));
-    operatorController.x().and(() -> currentGoal == SuperstructureGoal.PREP_L2).onTrue(Superstructure.pose(this, () -> SuperstructureGoal.SCORE_L2));
-    operatorController.x().and(() -> currentGoal == SuperstructureGoal.PREP_L3).onTrue(Superstructure.pose(this, () -> SuperstructureGoal.SCORE_L3));
-
-    operatorController.pov(0).onTrue(Superstructure.pose(this, () -> SuperstructureGoal.PREP_L3));
-    operatorController.pov(90).onTrue(Superstructure.pose(this, () -> SuperstructureGoal.PREP_L2));
-    operatorController.pov(180).onTrue(Superstructure.pose(this, () -> SuperstructureGoal.SCORE_TROUGH));
-    operatorController.pov(270).onTrue(Superstructure.pose(this, () -> SuperstructureGoal.PREP_L1));
+    operatorController.pov(0).onTrue(Superstructure.pose(this, SuperstructurePose.PREP_L3));
+    operatorController.pov(90).onTrue(Superstructure.pose(this, SuperstructurePose.PREP_L2));
+    operatorController.pov(180).onTrue(Superstructure.pose(this, SuperstructurePose.SCORE_TROUGH));
+    operatorController.pov(270).onTrue(Superstructure.pose(this, SuperstructurePose.PREP_L1));
   }
 
   public Command getAutonomousCommand() {
-    // return drive.fieldAxisControlCommand(() -> -0.2, () -> 0.0, () -> 0.0).withTimeout(2).withName("Auto Taxi");
     return Commands.none();
   }
 
   public boolean getIntakeInputInflection() {
     return ConditionalUitls.withinTolerance(operatorController.getRightTriggerAxis(), 0.5, 0.1);
-  }
-
-  public static SuperstructureGoal getCurrentGoal() {
-    return currentGoal;
   }
 }

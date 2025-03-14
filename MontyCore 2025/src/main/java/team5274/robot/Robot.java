@@ -31,7 +31,7 @@ public class Robot extends LoggedRobot {
     // SmartDashboard.putBoolean("Elevator Trigger", RobotContainer.elevatorAtLowest.getAsBoolean());
     SmartDashboard.putNumber("Robot/Battery Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("Robot/Brownout Voltage", RobotController.getBrownoutVoltage());
-    SmartDashboard.putString("Robot/Current Goal", RobotContainer.currentGoal.name());
+    SmartDashboard.putString("Robot/Current Goal", RobotContainer._robotPose.name());
     SmartDashboard.putString("Status", 
       SmartDashboard.getBoolean("Arm/Encoder Connected", false)
       && SmartDashboard.getBoolean("ElevatorPivot/Encoder Connected", false)

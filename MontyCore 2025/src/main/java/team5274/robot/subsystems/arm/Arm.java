@@ -16,10 +16,10 @@ import team5274.robot.RobotContainer;
 import team5274.robot.Constants.ArmConstants;
 import team5274.robot.Constants.ElevatorPivotConstants;
 import team5274.robot.DeviceMap.ArmMap;
-import team5274.robot.subsystems.Superstructure.SuperstructureGoal;
+import team5274.robot.subsystems.Superstructure.SuperstructurePose;
 
 public class Arm extends SubsystemBase implements SubsystemFrame {
-    private double cachedArmAngle = SuperstructureGoal.IDLE.armAngle;
+    private double cachedArmAngle = SuperstructurePose.IDLE.armAngle;
     private double initArmAngle;
     private double cachedWristAngle = 0.0;
     private TalonFX pinionMotor, wristMotor;
