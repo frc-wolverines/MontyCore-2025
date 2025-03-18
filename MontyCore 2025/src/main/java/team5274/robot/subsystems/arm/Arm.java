@@ -19,9 +19,9 @@ import team5274.robot.DeviceMap.ArmMap;
 import team5274.robot.subsystems.Superstructure.SuperstructurePose;
 
 public class Arm extends SubsystemBase implements SubsystemFrame {
-    private double cachedArmAngle = SuperstructurePose.IDLE.armAngle;
+    public double cachedArmAngle = SuperstructurePose.IDLE.armAngle;
     private double initArmAngle;
-    private double cachedWristAngle = 0.0;
+    public double cachedWristAngle = 0.0;
     private TalonFX pinionMotor, wristMotor;
     DutyCycleEncoder encoder;
 

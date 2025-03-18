@@ -22,8 +22,7 @@ public class Superstructure {
     */
     public enum SuperstructurePose {
         IDLE(0.64, 0.0, 4.33, 0.0),
-        INTAKE_STATION(0.51, 0.55, 4.33, 0.0),
-        HANG(0.0, 0.0, 4.22, 0.0),
+        INTAKE_STATION(0.48, 0.55, 4.33, 0.0),
         SCORE_TROUGH(0.33, 0.0, 4.9, 0.0),
         PREP_L1(0.33, 0.79, 4.49, Math.PI / 2), 
         SCORE_L1(0.33, 0.79, 4.98, Math.PI / 2), 
@@ -60,31 +59,31 @@ public class Superstructure {
         //     Commands.none().withTimeout(1).withName("Wrist Rotates Now")
         // ));
 
-        List<Command> poseSequence = new ArrayList<Command>(Arrays.asList(
-            container.elevatorPivot.angleCommand(pose.elevatorAngle),
+        Command[] poseSequence = {
+            container.elevatorPivot.angleCommand(pose.elevatorAngle).withName("Elevator Pivot Segment of Pose"),
             container.elevator.heightCommand(pose.elevatorHeight),
             container.arm.orientArm(pose.armAngle),
             container.arm.orientWrist(pose.wristAngle)
-        ));
+        };
 
-        return Commands.sequence(poseSequence.toArray(new Command[4]))
-            .beforeStarting(() -> {
-                RobotContainer._robotPose = pose; 
-            })
-            .beforeStarting(() -> { 
-                if(!willCollapse(pose) && !isOriginal(poseSequence)) Collections.reverse(poseSequence);
-                if(willCollapse(pose) && isOriginal(poseSequence)) Collections.reverse(poseSequence);
-                System.out.println("\n");
-                System.out.println("Will Collapse: " + willCollapse(pose));
-                System.out.println("Change: " + RobotContainer._robotPose + " -> " + pose);
-                System.out.println("Order:");
-                for(Command command : poseSequence) System.out.println("  " + command.getName());
-            })
-            .withName("Pose to " + pose);
+        if(pose == SuperstructurePose.IDLE) Collections.reverse(Arrays.asList(poseSequence));
+        return Commands.runOnce(() -> RobotContainer._robotPose = pose).andThen(Commands.sequence(poseSequence)).withName("Pose to " + pose);
+        // return Commands.runOnce(() -> {
+        //     if(!willCollapse(pose) && !isOriginal(poseSequence)) Collections.reverse(poseSequence); //Reversed -> Original
+        //     if(willCollapse(pose) && isOriginal(poseSequence)) Collections.reverse(poseSequence); //Original -> Reversed
+        //     System.out.println("\n");
+        //     System.out.println("Will Collapse: " + willCollapse(pose));
+        //     System.out.println("Change: " + RobotContainer._robotPose + " -> " + pose);
+        //     System.out.println("Order:");   
+        //     for(Command command : poseSequence) System.out.println("  " + command.getName());
+        // }).andThen(() -> RobotContainer._robotPose = pose).andThen(() -> {
+        //     System.out.println("Will Collapse: " + willCollapse(pose));
+        //     System.out.println("Is Original Order: " + isOriginal(poseSequence));
+        // }).andThen(Commands.sequence(poseSequence.toArray(new Command[4]))).withName("Pose to " + pose);
     }
 
     public static boolean isOriginal(List<Command> sequence) {
-        return sequence.get(0).getName() == "Elevator Pivots Now";
+        return sequence.get(0).getName() == "Elevator Pivot Segment of Pose";
     }
 
     public static boolean willCollapse(SuperstructurePose newPose) {

@@ -200,7 +200,7 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
      * @return the robot's heading in degrees
      */
     public double getHeading() {
-        return Math.IEEEremainder(gyroscope.getAngle(), 360);
+        return Math.IEEEremainder(gyroscope.getAngle(), 360) + 180;
     }
 
     /**

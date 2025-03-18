@@ -21,7 +21,7 @@ import team5274.robot.DeviceMap.ElevatorMap;
 import team5274.lib.control.SubsystemFrame;
 
 public class Elevator extends SubsystemBase implements SubsystemFrame {
-    private double cachedHeight = 0.0;
+    public double cachedHeight = 0.0;
     private TalonFX master, slave;
     private DigitalInput limit = new DigitalInput(0);
 

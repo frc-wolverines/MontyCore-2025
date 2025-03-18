@@ -60,6 +60,7 @@ public class Pincer extends SubsystemBase implements SubsystemFrame {
         SmartDashboard.putNumber(getName() + "/Intake Velocity Rotations", intakeMotor.getEncoder().getVelocity());
 
         SmartDashboard.putNumber(getName() + "/Intake Tempurature", intakeMotor.getMotorTemperature());
+        
 
         // SmartDashboard.putNumber(getName() + "/Color Sensor Proximity", colorSensor.getProximity());
         // SmartDashboard.putString(getName() + "/Color Sensor Color", "" + colorSensor.getRed() + ", " + (colorSensor.getGreen() / 2) + ", " + colorSensor.getBlue());

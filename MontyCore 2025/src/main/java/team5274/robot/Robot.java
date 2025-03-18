@@ -32,12 +32,11 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putNumber("Robot/Battery Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("Robot/Brownout Voltage", RobotController.getBrownoutVoltage());
     SmartDashboard.putString("Robot/Current Goal", RobotContainer._robotPose.name());
-    SmartDashboard.putString("Status", 
+    SmartDashboard.putBoolean("Comp Ready", 
       SmartDashboard.getBoolean("Arm/Encoder Connected", false)
       && SmartDashboard.getBoolean("ElevatorPivot/Encoder Connected", false)
-      && !RobotContainer.debugMode ? "Comp all good!" : "someting wrong"
+      && RobotContainer.modeChooser.getSelected() == false
     );
-    SmartDashboard.putBoolean("Is Debug Mode", RobotContainer.debugMode);
   }
 
   @Override

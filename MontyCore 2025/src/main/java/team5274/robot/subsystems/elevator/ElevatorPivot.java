@@ -20,7 +20,7 @@ import team5274.robot.DeviceMap.ElevatorPivotMap;
 import team5274.robot.subsystems.Superstructure.SuperstructurePose;
 
 public class ElevatorPivot extends SubsystemBase implements SubsystemFrame {
-    private double cachedAngle = SuperstructurePose.IDLE.elevatorAngle; //Cached angle to hold at
+    public double cachedAngle = SuperstructurePose.IDLE.elevatorAngle; //Cached angle to hold at
     private TalonFX master, slave;
     private DutyCycleEncoder encoder;
 
