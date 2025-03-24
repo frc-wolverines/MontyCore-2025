@@ -1,12 +1,8 @@
 package team5274.robot.subsystems.drive;
 
-import static edu.wpi.first.units.Units.Rotation;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -15,8 +11,6 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
-
-import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -31,6 +25,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team5274.lib.control.SubsystemFrame;
+import team5274.lib.util.ConditionalUitls;
+import team5274.lib.util.LimelightHelpers;
 import team5274.robot.Robot;
 import team5274.robot.RobotContainer;
 import team5274.robot.Constants.DriveConstants;
@@ -44,7 +40,8 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
     private Field2d field;
 
     private SlewRateLimiter xInputLimiter, yInputLimiter, rInputLimiter;
-    private PIDController xController, yController, rController;
+    private PIDController xAlignmentController = new PIDController(DriveConstants.kXAlignmentP, DriveConstants.kXAlignmentI, DriveConstants.kXAlignmentD);
+    private PIDController yAlignmentController = new PIDController(DriveConstants.kYAlignmentP, DriveConstants.kYAlignmentI, DriveConstants.kYAlignmentD);
 
     public static Drive _instance;
 
@@ -71,10 +68,6 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
         yInputLimiter = new SlewRateLimiter(DriveConstants.kDriveMaxAcceleration);
         rInputLimiter = new SlewRateLimiter(DriveConstants.kDriveMaxAngularAcceleration);
 
-        xController = new PIDController(DriveConstants.kXP, 0.0, 0.0);
-        yController = new PIDController(DriveConstants.kYP, 0.0, 0.0);
-        rController = new PIDController(DriveConstants.kRP, 0.0, 0.0);
-
         RobotConfig config;
         try{
             config = RobotConfig.fromGUISettings();
@@ -100,10 +93,14 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
         resetHeading();
         zeroSensors();
 
-        setDefaultCommand(fieldAxisControlCommand(
+        setDefaultCommand(smartTeleOpControlCommand(
             () -> -RobotContainer.driverController.getLeftY(), 
             RobotContainer.driverController::getLeftX, 
-            RobotContainer.driverController::getRightX
+            RobotContainer.driverController::getRightX,
+            () -> ConditionalUitls.binaryToDirection(
+                RobotContainer.driverController.rightBumper().getAsBoolean(), 
+                RobotContainer.driverController.leftBumper().getAsBoolean()
+            )
         ));
     }
 
@@ -131,6 +128,29 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
 
             setSpeeds(speeds);
         }); 
+    }
+
+    public Command smartTeleOpControlCommand(Supplier<Double> xAxisSupplier, Supplier<Double> yAxisSupplier, Supplier<Double> rAxisSupplier, Supplier<Double> branchSelectorSupplier) {
+        return run(() -> {
+            ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                -yInputLimiter.calculate(xAxisSupplier.get() * DriveConstants.kDriveMaxAllowedSpeed),
+                -xInputLimiter.calculate(yAxisSupplier.get() * DriveConstants.kDriveMaxAllowedSpeed),
+                -rInputLimiter.calculate(rAxisSupplier.get() * DriveConstants.kDriveMaxAllowedAngularSpeed),
+                getRotation2d()
+            );
+
+            if(branchSelectorSupplier.get() != 0 && LimelightHelpers.getTA("limelight") > DriveConstants.kAprilTagMinArea) {
+                double tx = branchSelectorSupplier.get() == -1 ? DriveConstants.kLeftBranchTx : branchSelectorSupplier.get() == 1 ? DriveConstants.kRightBranchTx : 0.0;
+
+                speeds.plus(new ChassisSpeeds(
+                    xAlignmentController.calculate(LimelightHelpers.getTX("limelight"), tx),
+                    yAlignmentController.calculate(LimelightHelpers.getTA("limelight"), DriveConstants.kAprilTagTargetArea),
+                    0.0
+                ));
+            }
+
+            setSpeeds(speeds);
+        });
     }
 
     /**
@@ -229,21 +249,11 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
     @Override
     public void sendTelemetry() {
         SmartDashboard.putData(this);
-        // SmartDashboard.putData(getName() + "/Gyroscope", gyroscope);
-
-        // modules.forEach((module) -> {
-        //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Absolute Position", module.getAbsPivotPosition());
-        //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Pivot Position", module.getPivotPosition());
-        //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Track Position", module.getTrackPosition());
-        //     SmartDashboard.putNumber(getName() + "/Module " + module.getNumber() + "/Track Velocity", module.getTrackVelocity());
-        // });
     }
 
     @Override
     public void zeroSensors() {
         modules.forEach((module) -> {module.zeroPivotPosition(); module.resetEncoders();});
-
-        System.out.println("heheheh, zeroed");
     }
 
     public Command zero() {

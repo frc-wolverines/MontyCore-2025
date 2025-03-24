@@ -4,15 +4,11 @@
 
 package team5274.robot;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.CustomParamsConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -24,6 +20,20 @@ import team5274.robot.subsystems.drive.SwerveModule.SwerveModuleConfiguration;
 public class Constants {
 
     public static class DriveConstants {
+
+        public static final double kXAlignmentP = 0.0;
+        public static final double kXAlignmentI = 0.0;
+        public static final double kXAlignmentD = 0.0;
+
+        public static final double kYAlignmentP = 0.0;
+        public static final double kYAlignmentI = 0.0;
+        public static final double kYAlignmentD = 0.0;
+
+        public static final double kAprilTagMinArea = 0.0;
+        public static final double kAprilTagTargetArea = 0.0;
+
+        public static final double kLeftBranchTx = 0.0;
+        public static final double kRightBranchTx = 0.0;
 
         public static final double kWheelDistance = Units.inchesToMeters(23.75);
 
@@ -191,26 +201,10 @@ public class Constants {
                 .withNeutralMode(NeutralModeValue.Brake));
     }
 
-    public static class PincerConstants {
-        //Tolerances
-        public static final double kColorSensorPossesionProximityThreshold = 0.0; //Configure
-
+    public static class AffectorConstants {
         //Setpoints
-        public static final double kIntakeDutyCycle = 1.0;
-        public static final double kDepositDutyCycle = -1.0;
-    }
+        public static final double kCoralDutyCycle = 0.25;
+        public static final double kAlgaeDutyCycle = 1.0;
 
-    public static class VisionConstants {
-        public static final Translation3d cameraTranslation = new Translation3d(
-            0.046,
-            0.277,
-            -0.259
-        );
-
-        public static final Rotation3d cameraRotation = new Rotation3d(
-            0,
-            70,
-            15
-        );
     }
 }

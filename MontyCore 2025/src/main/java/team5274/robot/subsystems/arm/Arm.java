@@ -2,24 +2,20 @@ package team5274.robot.subsystems.arm;
 
 import java.util.function.Supplier;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team5274.lib.control.SubsystemFrame;
-import team5274.robot.RobotContainer;
 import team5274.robot.Constants.ArmConstants;
-import team5274.robot.Constants.ElevatorPivotConstants;
 import team5274.robot.DeviceMap.ArmMap;
-import team5274.robot.subsystems.Superstructure.SuperstructurePose;
+import team5274.robot.subsystems.Superstructure.SuperPose;
 
 public class Arm extends SubsystemBase implements SubsystemFrame {
-    public double cachedArmAngle = SuperstructurePose.IDLE.armAngle;
+    public double cachedArmAngle = SuperPose.IDLE.armAngle;
     private double initArmAngle;
     public double cachedWristAngle = 0.0;
     private TalonFX pinionMotor, wristMotor;
