@@ -21,6 +21,20 @@ public class Constants {
 
     public static class DriveConstants {
 
+        public static final double kXAlignmentP = 0.0;
+        public static final double kXAlignmentI = 0.0;
+        public static final double kXAlignmentD = 0.0;
+
+        public static final double kYAlignmentP = 0.0;
+        public static final double kYAlignmentI = 0.0;
+        public static final double kYAlignmentD = 0.0;
+
+        public static final double kAprilTagMinArea = 0.0;
+        public static final double kAprilTagTargetArea = 0.0;
+
+        public static final double kLeftBranchTx = 0.0;
+        public static final double kRightBranchTx = 0.0;
+
         public static final double kWheelDistance = Units.inchesToMeters(23.75);
 
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
@@ -192,9 +206,5 @@ public class Constants {
         public static final double kCoralDutyCycle = 0.25;
         public static final double kAlgaeDutyCycle = 1.0;
 
-    }
-
-    public static class VisionConstants {
-        
     }
 }
