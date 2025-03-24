@@ -56,7 +56,10 @@ public class RobotContainer {
     SmartDashboard.putData("Mode", modeChooser);
     
     NamedCommands.registerCommand("PoseTrough", Superstructure.pose(this, SuperstructurePose.SCORE_TROUGH));
-    NamedCommands.registerCommand("ShortDeposit", pincer.dutyCycleCommand(() -> -0.25).withTimeout(1));
+    NamedCommands.registerCommand("PoseIdle", Superstructure.pose(this, SuperstructurePose.IDLE));
+    NamedCommands.registerCommand("ShortDeposit", pincer.dutyCycleCommand(() -> 0.25).withTimeout(1));
+    NamedCommands.registerCommand("LongDeposit", pincer.dutyCycleCommand(() -> 0.25).withTimeout(2));
+    NamedCommands.registerCommand("PoseLowAlgae", Superstructure.pose(this, SuperstructurePose.ALGAE_L2));
 
     configureBindings();
 

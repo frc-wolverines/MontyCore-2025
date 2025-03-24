@@ -1,0 +1,68 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center to Taxi"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PoseTrough"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShortDeposit"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PoseIdle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PoseLowAlgae"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "LongDeposit"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PoseLowAlgae"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center Flush to Algae Removal Distance"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Signle Score wAlgae",
+  "choreoAuto": false
+}

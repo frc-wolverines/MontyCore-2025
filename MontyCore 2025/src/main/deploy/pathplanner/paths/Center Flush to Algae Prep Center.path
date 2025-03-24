@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.478693181818182,
+        "x": 5.8333806818181815,
         "y": 4.020014204545454
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.157774134928914,
-        "y": 4.010336943955931
+        "x": 6.291915599730847,
+        "y": 4.013991990733578
       },
       "isLocked": false,
-      "linkedName": "Center Start"
+      "linkedName": "Center Flush"
     },
     {
       "anchor": {
-        "x": 5.8333806818181815,
+        "x": 6.170968511450383,
         "y": 4.020014204545454
       },
       "prevControl": {
-        "x": 6.374202397743831,
-        "y": 4.023458183068781
+        "x": 5.606307299944122,
+        "y": 4.026919837496169
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center Flush"
+      "linkedName": "Algae Prep Center"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Start",
+  "folder": "Transition",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

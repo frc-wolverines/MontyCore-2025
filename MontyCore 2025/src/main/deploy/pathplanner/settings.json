@@ -4,9 +4,12 @@
   "holonomicMode": true,
   "pathFolders": [
     "Approach to Score",
+    "Transition",
     "Start"
   ],
   "autoFolders": [
+    "Test",
+    "Signle Score wAlgae",
     "Single Score"
   ],
   "defaultMaxVel": 3.0,

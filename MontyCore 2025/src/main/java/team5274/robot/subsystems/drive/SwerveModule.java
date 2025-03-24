@@ -41,7 +41,7 @@ public class SwerveModule {
         encoder = new CANcoder(map.encoderId.getDeviceId());
 
         controller = new PIDController(DriveConstants.kPivotP, DriveConstants.kPivotI, DriveConstants.kPivotD);
-        controller.enableContinuousInput(-1, 0.999);
+        controller.enableContinuousInput(-1, 0.999755859375);
     }
 
     /**
