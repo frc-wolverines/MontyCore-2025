@@ -72,8 +72,18 @@ public class Superstructure {
     }
 
     public static class SuperCommandFactory {
-        public static Command build(SuperPose pose) {
-            return Commands.none();
+        public static Command build(RobotContainer container, SuperPose pose) {
+            return Commands.runOnce(() -> {
+                Command[] sequence = {
+                    container.elevatorPivot.angleCommand(pose.elevatorAngle),
+                    container.elevator.heightCommand(pose.elevatorHeight),
+                    container.arm.orientArm(pose.armAngle),
+                    container.arm.orientWrist(pose.wristAngle)
+                };
+
+                if(pose.elevatorHeight <= RobotContainer.pose.elevatorHeight) Collections.reverse(Arrays.asList(sequence));
+                Commands.sequence(sequence).beforeStarting(() -> RobotContainer.pose = pose).withName("Pose to " + pose.name()).schedule();
+            });
         }
     }
 }

@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.610890337566897,
-        "y": 3.202436768808344
+        "x": 6.403191103335235,
+        "y": 2.352488940978339
       },
       "isLocked": false,
       "linkedName": "Right Start"
     },
     {
       "anchor": {
-        "x": 5.1553125,
-        "y": 2.54421875
+        "x": 5.492748091603054,
+        "y": 2.7187977099236638
       },
       "prevControl": {
-        "x": 5.984121300326627,
-        "y": 1.76729851084335
+        "x": 6.529967159187458,
+        "y": 2.2727336236747906
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "P6 Approach"
+      "linkedName": "Right Start Intermove"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 121.21840276434634
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Start",

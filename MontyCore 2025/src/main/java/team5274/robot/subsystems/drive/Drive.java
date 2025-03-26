@@ -140,13 +140,16 @@ public class Drive extends SubsystemBase implements SubsystemFrame {
             );
 
             if(branchSelectorSupplier.get() != 0 && LimelightHelpers.getTA("limelight") > DriveConstants.kAprilTagMinArea) {
-                double tx = branchSelectorSupplier.get() == -1 ? DriveConstants.kLeftBranchTx : branchSelectorSupplier.get() == 1 ? DriveConstants.kRightBranchTx : 0.0;
+                double tx = branchSelectorSupplier.get() == -1 ? DriveConstants.kLeftBranchTx : DriveConstants.kRightBranchTx;
+                double ta = branchSelectorSupplier.get() == -1 ? DriveConstants.kApriTagTargetAreaLeft : DriveConstants.kAprilTagTargetAreaRight;
 
-                speeds.plus(new ChassisSpeeds(
-                    xAlignmentController.calculate(LimelightHelpers.getTX("limelight"), tx),
-                    yAlignmentController.calculate(LimelightHelpers.getTA("limelight"), DriveConstants.kAprilTagTargetArea),
+                System.out.println(xAlignmentController.calculate(LimelightHelpers.getTX("limelight"), tx));
+
+                speeds = new ChassisSpeeds(
+                    -xAlignmentController.calculate(LimelightHelpers.getTA("limelight"), ta),
+                    yAlignmentController.calculate(LimelightHelpers.getTX("limelight"), tx),
                     0.0
-                ));
+                );
             }
 
             setSpeeds(speeds);

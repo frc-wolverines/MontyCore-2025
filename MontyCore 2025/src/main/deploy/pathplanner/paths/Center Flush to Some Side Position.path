@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.8333806818181815,
+        "x": 5.693702290076336,
         "y": 4.020014204545454
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.010914321424743,
-        "y": 3.474835938500424
+        "x": 5.880557986414224,
+        "y": 3.13431206126118
       },
       "isLocked": false,
       "linkedName": "Center Flush"
     },
     {
       "anchor": {
-        "x": 6.1877146946564885,
-        "y": 2.9113788167938925
+        "x": 6.623115458015268,
+        "y": 3.1709446564885497
       },
       "prevControl": {
-        "x": 6.106893216678973,
-        "y": 3.187686654596653
+        "x": 6.42704998620477,
+        "y": 3.421121413174908
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "Transition",

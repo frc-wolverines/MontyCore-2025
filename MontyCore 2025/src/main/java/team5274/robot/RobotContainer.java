@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team5274.lib.util.TactileAlert;
 import team5274.robot.subsystems.Superstructure;
+import team5274.robot.subsystems.Superstructure.SuperCommandFactory;
 import team5274.robot.subsystems.Superstructure.SuperPose;
 import team5274.robot.subsystems.arm.Arm;
 import team5274.robot.subsystems.arm.Affector;
@@ -59,19 +60,19 @@ public class RobotContainer {
 
   private void configureSettings() {
     modeChooser = new SendableChooser<>();
-    modeChooser.setDefaultOption("Debug Mode", true);
-    modeChooser.setDefaultOption("Comp Mode", false);
+    modeChooser.addOption("Debug Mode", true);
+    modeChooser.addOption("Comp Mode", false);
     modeChooser.setDefaultOption("Comp Mode", false);
     modeChooser.onChange(this::initSystems);
     SmartDashboard.putData("Mode", modeChooser);
   }
 
   private void configureAuto() {
-    NamedCommands.registerCommand("PoseTrough", Superstructure.pose(this, SuperPose.SCORE_TROUGH));
-    NamedCommands.registerCommand("PoseIdle", Superstructure.pose(this, SuperstructurePose.IDLE));
+    NamedCommands.registerCommand("PoseTrough", SuperCommandFactory.build(this, SuperPose.SCORE_TROUGH));
+    NamedCommands.registerCommand("PoseIdle", SuperCommandFactory.build(this, SuperPose.IDLE));
     NamedCommands.registerCommand("ShortDeposit", pincer.dutyCycleCommand(() -> 0.25).withTimeout(1));
     NamedCommands.registerCommand("LongDeposit", pincer.dutyCycleCommand(() -> 0.25).withTimeout(2));
-    NamedCommands.registerCommand("PoseLowAlgae", Superstructure.pose(this, SuperstructurePose.ALGAE_L2));
+    NamedCommands.registerCommand("PoseLowAlgae", SuperCommandFactory.build(this, SuperPose.ALGAE_L2));
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto", autoChooser);
@@ -79,22 +80,21 @@ public class RobotContainer {
 
   private void configureBindings() {
     driverController.start().onTrue(drive.reset());
-    driverController.rightBumper().and(() -> pose == SuperPose.IDLE).toggleOnTrue(Superstructure.pose(this, SuperPose.ALGAE_L2));
-    driverController.leftBumper().and(() -> pose == SuperPose.IDLE).toggleOnTrue(Superstructure.pose(this, SuperPose.ALGAE_L3));
+    driverController.pov(180).toggleOnTrue(SuperCommandFactory.build(this, SuperPose.ALGAE_L2));
+    driverController.pov(0).toggleOnTrue(SuperCommandFactory.build(this, SuperPose.ALGAE_L3));
 
     driverController.a().onTrue(drive.getDefaultCommand());
 
-    operatorController.a().onTrue(Superstructure.pose(this, SuperPose.IDLE));
-    operatorController.y().and(() -> pose == SuperPose.IDLE).toggleOnTrue(Superstructure.pose(this, SuperPose.INTAKE_STATION));
+    operatorController.a().onTrue(SuperCommandFactory.build(this, SuperPose.IDLE));
+    operatorController.y().toggleOnTrue(SuperCommandFactory.build(this, SuperPose.INTAKE_STATION));
+    operatorController.x().and(() -> pose == SuperPose.PREP_L1).onTrue(SuperCommandFactory.build(this, SuperPose.SCORE_L1));
+    operatorController.x().and(() -> pose == SuperPose.PREP_L2).onTrue(SuperCommandFactory.build(this, SuperPose.SCORE_L2));
+    operatorController.x().and(() -> pose == SuperPose.PREP_L3).onTrue(SuperCommandFactory.build(this, SuperPose.SCORE_L3));
 
-    operatorController.x().and(() -> pose == SuperPose.PREP_L1).onTrue(Superstructure.pose(this, SuperPose.SCORE_L1));
-    operatorController.x().and(() -> pose == SuperPose.PREP_L2).onTrue(Superstructure.pose(this, SuperPose.SCORE_L2));
-    operatorController.x().and(() -> pose == SuperPose.PREP_L3).onTrue(Superstructure.pose(this, SuperPose.SCORE_L3));
-
-    operatorController.pov(0).and(() -> pose == SuperPose.IDLE).onTrue(Superstructure.pose(this, SuperPose.PREP_L3));
-    operatorController.pov(90).and(() -> pose == SuperPose.IDLE).onTrue(Superstructure.pose(this, SuperPose.PREP_L2));
-    operatorController.pov(180).and(() -> pose == SuperPose.IDLE).onTrue(Superstructure.pose(this, SuperPose.SCORE_TROUGH));
-    operatorController.pov(270).and(() -> pose == SuperPose.IDLE).onTrue(Superstructure.pose(this, SuperPose.PREP_L1));
+    operatorController.pov(0).onTrue(SuperCommandFactory.build(this, SuperPose.PREP_L3));
+    operatorController.pov(90).onTrue(SuperCommandFactory.build(this, SuperPose.PREP_L2));
+    operatorController.pov(180).onTrue(SuperCommandFactory.build(this, SuperPose.SCORE_TROUGH));
+    operatorController.pov(270).onTrue(SuperCommandFactory.build(this, SuperPose.PREP_L1));
   }
 
   public Command getAutonomousCommand() {

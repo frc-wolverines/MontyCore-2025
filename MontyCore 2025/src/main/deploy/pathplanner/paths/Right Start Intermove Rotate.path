@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.477170801526719,
-        "y": 1.856369274809158
+        "x": 5.492748091603054,
+        "y": 2.7187977099236638
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.610890337566897,
-        "y": 3.202436768808344
+        "x": 5.512686743436778,
+        "y": 2.9687736230700383
       },
       "isLocked": false,
-      "linkedName": "Right Start"
+      "linkedName": "Right Start Intermove"
     },
     {
       "anchor": {
-        "x": 5.1553125,
-        "y": 2.54421875
+        "x": 5.492748091603054,
+        "y": 2.8695133587786255
       },
       "prevControl": {
-        "x": 5.984121300326627,
-        "y": 1.76729851084335
+        "x": 5.483241453500356,
+        "y": 2.6040835301894876
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "P6 Approach"
+      "linkedName": "Right Approach Rotate End"
     }
   ],
   "rotationTargets": [],
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 121.21840276434634
+    "rotation": 59.99999999999999
   },
   "reversed": false,
-  "folder": "Start",
+  "folder": "Transition",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

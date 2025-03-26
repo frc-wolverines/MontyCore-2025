@@ -21,19 +21,20 @@ public class Constants {
 
     public static class DriveConstants {
 
-        public static final double kXAlignmentP = 0.0;
+        public static final double kXAlignmentP = 0.075;
         public static final double kXAlignmentI = 0.0;
         public static final double kXAlignmentD = 0.0;
 
-        public static final double kYAlignmentP = 0.0;
+        public static final double kYAlignmentP = 0.05;
         public static final double kYAlignmentI = 0.0;
         public static final double kYAlignmentD = 0.0;
 
-        public static final double kAprilTagMinArea = 0.0;
-        public static final double kAprilTagTargetArea = 0.0;
+        public static final double kAprilTagMinArea = 1;
+        public static final double kAprilTagTargetAreaRight = 5;
+        public static final double kApriTagTargetAreaLeft = 10;
 
-        public static final double kLeftBranchTx = 0.0;
-        public static final double kRightBranchTx = 0.0;
+        public static final double kLeftBranchTx = 16.21;
+        public static final double kRightBranchTx = -13.12;
 
         public static final double kWheelDistance = Units.inchesToMeters(23.75);
 
@@ -179,7 +180,7 @@ public class Constants {
         public static final double kArmD = 0.0; //Configure
 
 
-        public static final double kWristP = 0.08; //Configure
+        public static final double kWristP = 0.06; //Configure
         public static final double kWristI = 0.0; //Configure
         public static final double kWristD = 0.0; //Configure
 
